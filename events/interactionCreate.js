@@ -1,10 +1,9 @@
 /*
-This event that checks for commands
-*/
+event that listens for commands and runs the command
+ */
 
 module.exports = {
   name: "interactionCreate",
-  once: true,
   async execute(interaction) {
     if (!interaction.isCommand()) return;
 
