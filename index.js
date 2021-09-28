@@ -22,33 +22,20 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-//events
-client.once("ready", () => {
-  //set the status
-  client.user.setActivity("with discord.js documentation", { type: "PLAYING" });
-  console.log(client.user.username);
-});
+//read all the js names in the /events folder and insert them into an array
+const eventFiles = fs
+  .readdirSync("./events")
+  .filter((file) => file.endsWith(".js"));
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  //retrieve the command details by using the command name as map key
-  const command = client.commands.get(interaction.commandName);
-
-  //if command not in the map then return
-  if (!command) return;
-
-  //execute the command or print error if it fails
-  try {
-    await command.execute(interaction);
-  } catch (e) {
-    console.error(e);
-    await interaction.reply({
-      content: "There was an error while executing this command!",
-      ephemeral: true,
-    });
+//run the event once or have it on depending on the once property of the event
+for (const file of eventFiles) {
+  const event = require(`./events/${file}`);
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
   }
-});
+}
 
 //start the bot with the token from the config file
 client.login(token);
