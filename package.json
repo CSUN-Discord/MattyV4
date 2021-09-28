@@ -1,0 +1,27 @@
+{
+  "name": "mattyv4",
+  "version": "1.0.0",
+  "description": "Version 4 of Matty",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CSUN-Discord/MattyV4.git"
+  },
+  "keywords": [
+    "matty",
+    "discord",
+    "csun"
+  ],
+  "author": "Fahad Asat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CSUN-Discord/MattyV4/issues"
+  },
+  "homepage": "https://github.com/CSUN-Discord/MattyV4#readme",
+  "dependencies": {
+    "discord.js": "^13.1.0"
+  }
+}
