@@ -4,6 +4,12 @@ event that listens for commands and runs the command
 
 module.exports = {
   name: "interactionCreate",
+
+  /**
+   *
+   * @param interaction
+   * @returns {Promise<void>}
+   */
   async execute(interaction) {
     if (!interaction.isCommand()) return;
 
