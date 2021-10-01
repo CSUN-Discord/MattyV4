@@ -1,5 +1,5 @@
 /*
-This command will flip a coin
+This command will roll a dice
 
 */
 const { SlashCommandBuilder } = require("@discordjs/builders");
