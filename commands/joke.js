@@ -2,7 +2,7 @@
 This command will reply a joke to the user
 */
 
-var oneLinerJoke = require("one-liner-joke");
+const oneLinerJoke = require("one-liner-joke");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   ...new SlashCommandBuilder()
