@@ -6,10 +6,10 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   // name: "ping",
   // description: "Use to check if bot is active.",
-  permission: ["SEND_MESSAGES"],
   ...new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Use to check if bot is active"),
+  permission: ["SEND_MESSAGES"],
   cooldown: 5,
 
   /**
