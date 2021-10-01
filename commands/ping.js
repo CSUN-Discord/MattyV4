@@ -2,11 +2,15 @@
 This command sends a simple message to check if the bot is active
 */
 
+const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
-  name: "ping",
-  description: "Use to check if bot is active.",
+  // name: "ping",
+  // description: "Use to check if bot is active.",
   permission: ["SEND_MESSAGES"],
-  cooldown: 3,
+  ...new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Use to check if bot is active"),
+  cooldown: 5,
 
   /**
    *
