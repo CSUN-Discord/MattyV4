@@ -4,7 +4,11 @@ If there is an argument it will send the desired map picture
 
 */
 
-const { MessageSelectMenu, MessageActionRow } = require("discord.js");
+const {
+  MessageSelectMenu,
+  MessageActionRow,
+  MessageAttachment,
+} = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   ...new SlashCommandBuilder()
@@ -27,27 +31,27 @@ module.exports = {
           {
             label: "campus",
             description: "The campus map",
-            value: "optionOne",
+            value: "campus",
           },
           {
             label: "housing",
             description: "The housing map",
-            value: "optionTwo",
+            value: "housing",
           },
           {
             label: "shuttle",
             description: "The shuttle map",
-            value: "optionThree",
+            value: "shuttle",
           },
           {
             label: "water",
             description: "The water map",
-            value: "optionFour",
+            value: "water",
           },
           {
             label: "lactation",
             description: "The lactation map",
-            value: "optionFive",
+            value: "lactation",
           },
         ])
     );
@@ -64,23 +68,11 @@ module.exports = {
     collector.on("collect", async (collected) => {
       const value = collected.values[0];
 
-      switch (value) {
-        case "campus":
-          //post picture
-          break;
-        case "housing":
-          //post picture
-          break;
-        case "shuttle":
-          //post picture
-          break;
-        case "water":
-          //post picture
-          break;
-        case "lactation":
-          //post picture
-          break;
-      }
+      const attachment = new MessageAttachment(`./media/maps/${value}.jpg`);
+
+      await collected.reply({
+        files: [attachment],
+      });
     });
   },
 };
