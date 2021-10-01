@@ -24,7 +24,8 @@ module.exports = async (client) => {
       return table.addRow(file.split("/"[7]), `⚠ Failed`, "Missing a name.");
     if (!command.description)
       return table.addRow(command.name, `⚠ Failed`, "Missing a description.");
-
+    if (!command.cooldown)
+      return table.addRow(command.name, `⚠ Failed`, "Missing cooldown.");
     if (command.permissions) {
       if (perms.includes(command.permission)) command.defaultPermission = false;
       else

@@ -6,6 +6,7 @@ module.exports = {
   name: "ping",
   description: "Use to check if bot is active.",
   permission: ["SEND_MESSAGES"],
+  cooldown: 3,
 
   /**
    *
@@ -14,7 +15,7 @@ module.exports = {
    */
   async execute(interaction) {
     await interaction.reply({
-      content: "pong!",
+      content: `Websocket heartbeat: ${interaction.client.ws.ping}ms.`,
       ephemeral: true,
     });
   },
