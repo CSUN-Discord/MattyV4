@@ -39,7 +39,7 @@ module.exports = {
   //     type: "USER",
   //   },
   // ],
-  permission: ["ADMINISTRATOR"],
+  permission: ["MANAGE_MESSAGES"],
   cooldown: 5,
 
   /**
