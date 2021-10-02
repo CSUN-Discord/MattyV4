@@ -50,6 +50,8 @@ module.exports = {
       });
     } else if (interaction.options.getSubcommand() === "onceamatador") {
       interaction.reply("Always a Matador!");
+    } else {
+      interaction.reply({ content: "No command chosen", ephemeral: true });
     }
   },
 };
