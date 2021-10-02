@@ -14,7 +14,7 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
-    interaction.reply("Bot is reloading.");
+    await interaction.reply("Bot is reloading.");
     process.exit();
   },
 };
