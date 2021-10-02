@@ -16,7 +16,7 @@ module.exports = {
     )
     .setDescription("Updates your school year role."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
+  cooldown: 1578000,
 
   /**
    *
