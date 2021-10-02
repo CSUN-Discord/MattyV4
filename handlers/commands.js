@@ -26,8 +26,9 @@ module.exports = async (client) => {
       return table.addRow(command.name, `⚠ Failed`, "Missing a description.");
     if (!command.cooldown)
       return table.addRow(command.name, `⚠ Failed`, "Missing cooldown.");
-    if (command.permissions) {
-      if (perms.includes(command.permission)) command.defaultPermission = false;
+    if (command.permission) {
+      if (command.permission.every((ai) => perms.includes(ai)))
+        command.defaultPermission = false;
       else
         return table.addRow(command.name, `⚠ Failed`, "Permission is invalid.");
     }
@@ -49,7 +50,7 @@ module.exports = async (client) => {
       const Roles = (commandName) => {
         const cmdPerms = commandsArray.find(
           (c) => c.name === commandName
-        ).permissions;
+        ).permission;
         if (!cmdPerms) return null;
 
         return MainGuild.roles.cache.filter((r) => r.permissions.has(cmdPerms));
@@ -60,7 +61,7 @@ module.exports = async (client) => {
         if (!roles) return accumulator;
 
         const permissions = roles.reduce((a, r) => {
-          return [...a, { id: r.id, type: "ROLE", permissions: true }];
+          return [...a, { id: r.id, type: "ROLE", permission: true }];
         }, []);
         return [...accumulator, { id: r.id, permissions }];
       }, []);
