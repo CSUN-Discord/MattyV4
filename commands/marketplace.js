@@ -97,7 +97,9 @@ module.exports = {
     if (pictureLink) listingEmbed.addField("Pictures: ", `${pictureLink}`);
 
     await thread.setLocked(true);
-    await thread.send(`${interaction.member}, Created a thread for: ${title}`);
+    await thread.send(
+      `${interaction.member}, Created a thread for: ${title}. Please use the deletethread command when this listing is completed.`
+    );
     await thread.send({ embeds: [listingEmbed] });
 
     await interaction.reply("Submission received.");
