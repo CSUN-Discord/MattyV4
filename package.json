@@ -32,5 +32,8 @@
     "glob": "^7.2.0",
     "one-liner-joke": "^1.2.2",
     "prettier": "^2.4.1"
+  },
+  "devDependencies": {
+    "easy-discord-chatbot": "^0.0.4"
   }
 }
