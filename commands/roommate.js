@@ -1,5 +1,5 @@
 /*
-This command will create a new thread depending on the item being sold
+This command will create a new thread for the roommate search
 */
 
 const { MessageEmbed } = require("discord.js");
