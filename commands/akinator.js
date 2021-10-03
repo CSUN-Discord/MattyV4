@@ -2,13 +2,6 @@
 This command will allow you to play an akinator game
 */
 
-// const {
-//   MessageSelectMenu,
-//   MessageActionRow,
-//   MessageAttachment,
-// } = require("discord.js");
-// const { SlashCommandBuilder } = require("@discordjs/builders");
-
 const akinator = require("../modified-packages/discord.js-akinator/src/index");
 
 module.exports = {
