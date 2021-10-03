@@ -5,8 +5,8 @@ This command will create a new thread depending on the item being sold
 const { MessageEmbed } = require("discord.js");
 
 module.exports = {
-  name: "marketplace",
-  description: "Create a listing to sell an item.",
+  name: "roommate",
+  description: "Create a roommate listing.",
   options: [
     {
       name: "title",
@@ -15,48 +15,36 @@ module.exports = {
       type: "STRING",
     },
     {
-      name: "description",
-      description: "Description of your listing.",
-      required: true,
-      type: "STRING",
-    },
-    {
-      name: "price",
-      description: "Price of your listing.",
-      required: true,
-      type: "NUMBER",
-    },
-    {
-      name: "condition",
-      description: "Condition of your listing.",
+      name: "looking_for",
+      description: "Looking for roommate or a room?",
       required: true,
       type: "STRING",
       choices: [
         {
-          name: "new",
-          value: "New",
+          name: "roommate",
+          value: "Roommate",
         },
         {
-          name: "verygood",
-          value: "Very Good",
-        },
-        {
-          name: "good",
-          value: "Good",
-        },
-        {
-          name: "acceptable",
-          value: "Acceptable",
-        },
-        {
-          name: "digital",
-          value: "Digital",
+          name: "room",
+          value: "Room",
         },
       ],
     },
     {
-      name: "picturelink",
-      description: "Imgur link for pictures.",
+      name: "price",
+      description: "Price Range",
+      required: true,
+      type: "STRING",
+    },
+    {
+      name: "details",
+      description: "Details of your listing.",
+      required: true,
+      type: "STRING",
+    },
+    {
+      name: "links",
+      description: "Links/Pictures",
       required: false,
       type: "STRING",
     },
@@ -71,13 +59,13 @@ module.exports = {
    */
   async execute(interaction) {
     const title = interaction.options.getString("title");
-    const description = interaction.options.getString("description");
-    const price = interaction.options.getNumber("price");
-    const condition = interaction.options.getString("condition");
-    const pictureLink = interaction.options.getString("picturelink");
+    const lookingFor = interaction.options.getString("looking_for");
+    const price = interaction.options.getString("price");
+    const details = interaction.options.getString("details");
+    const links = interaction.options.getString("links");
 
     const marketPlaceChannel =
-      interaction.client.channels.cache.get("523967992917393418");
+      interaction.client.channels.cache.get("570809696135544835");
 
     const thread = await marketPlaceChannel.threads.create({
       name: title,
@@ -90,11 +78,11 @@ module.exports = {
       .setTitle(title)
       .setDescription(`${interaction.member}'s new listing.`)
       .addFields(
-        { name: "Description", value: description },
-        { name: "Price", value: `$${price}` },
-        { name: "Condition", value: condition }
+        { name: "Looking for a", value: lookingFor },
+        { name: "Price Range", value: `$${price}` },
+        { name: "Extra details", value: details }
       );
-    if (pictureLink) listingEmbed.addField("Pictures: ", `${pictureLink}`);
+    if (links) listingEmbed.addField("Pictures: ", `${links}`);
 
     await thread.setLocked(true);
     await thread.send(`${interaction.member}, Created a thread for: ${title}`);
