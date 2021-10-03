@@ -37,7 +37,7 @@ module.exports = {
           value: "New",
         },
         {
-          name: "verygood",
+          name: "very_good",
           value: "Very Good",
         },
         {
@@ -55,7 +55,7 @@ module.exports = {
       ],
     },
     {
-      name: "picturelink",
+      name: "picture_link",
       description: "Imgur link for pictures.",
       required: false,
       type: "STRING",
@@ -74,7 +74,7 @@ module.exports = {
     const description = interaction.options.getString("description");
     const price = interaction.options.getNumber("price");
     const condition = interaction.options.getString("condition");
-    const pictureLink = interaction.options.getString("picturelink");
+    const pictureLink = interaction.options.getString("picture_link");
 
     const marketPlaceChannel =
       interaction.client.channels.cache.get("523967992917393418");
