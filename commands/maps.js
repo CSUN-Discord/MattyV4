@@ -15,7 +15,6 @@ module.exports = {
     .setName("maps")
     .setDescription("Sends you various school maps."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

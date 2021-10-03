@@ -40,7 +40,6 @@ module.exports = {
   //   },
   // ],
   permission: ["MANAGE_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

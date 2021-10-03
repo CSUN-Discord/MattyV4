@@ -6,7 +6,6 @@ module.exports = {
   name: "reload",
   description: "Restarts the bot.",
   permission: ["ADMINISTRATOR"],
-  cooldown: 5,
 
   /**
    *

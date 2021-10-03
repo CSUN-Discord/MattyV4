@@ -15,7 +15,6 @@ module.exports = {
     .setDescription("Repeats after you."),
 
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

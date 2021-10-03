@@ -14,7 +14,6 @@ module.exports = {
     )
     .setDescription("Gives you a dice roll."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

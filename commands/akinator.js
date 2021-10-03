@@ -30,7 +30,6 @@ module.exports = {
       required: true,
     },
   ],
-  cooldown: 5,
 
   /**
    *

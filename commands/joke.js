@@ -9,7 +9,6 @@ module.exports = {
     .setName("joke")
     .setDescription("Makes you laugh."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

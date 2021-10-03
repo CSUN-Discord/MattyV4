@@ -18,7 +18,6 @@ module.exports = {
     .setDescription("Sends a suggestion to the mod team."),
 
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

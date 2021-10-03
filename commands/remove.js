@@ -52,7 +52,6 @@ module.exports = {
     },
   ],
   permission: ["BAN_MEMBERS"],
-  cooldown: 5,
 
   /**
    *

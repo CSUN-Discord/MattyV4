@@ -8,7 +8,6 @@ module.exports = {
     .setName("rateme")
     .setDescription("Gives you a rating."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

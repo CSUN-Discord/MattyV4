@@ -16,7 +16,6 @@ module.exports = {
     )
     .setDescription("Gives you a coin flip."),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

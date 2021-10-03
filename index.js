@@ -23,6 +23,10 @@ client.on("message", async (message) => {
     let reply = await chat.chat(message.content);
     message.reply(reply);
   }
+
+  // if (message.channel.id === "523967992917393418" && !message.author.bot) {
+  //   message.delete();
+  // }
 });
 
 //start the bot with the token from the config file

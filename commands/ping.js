@@ -10,7 +10,6 @@ module.exports = {
     .setName("ping")
     .setDescription("Use to check if bot is active"),
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

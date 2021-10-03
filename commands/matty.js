@@ -34,7 +34,6 @@ module.exports = {
     },
   ],
   permission: ["SEND_MESSAGES"],
-  cooldown: 5,
 
   /**
    *

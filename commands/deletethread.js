@@ -14,7 +14,6 @@ module.exports = {
       type: "STRING",
     },
   ],
-  cooldown: 5,
 
   /**
    *
