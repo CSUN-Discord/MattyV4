@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const hydroHomieSchema = new Schema({
   userId: String,
   timer: Array,
-  waterDrank: Number,
+  waterDrank: ,
 });
 
 module.exports = mongoose.model("hydroHomie", hydroHomieSchema);
