@@ -25,7 +25,9 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "aki-api": "^6.0.8",
     "ascii-table": "^0.0.9",
+    "connect-four": "^0.0.6",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "genius-lyrics": "^4.2.9",

@@ -18,7 +18,7 @@ require("./handlers/events")(client);
 //get the commands handler
 require("./handlers/commands")(client);
 
-client.on("message", async (message) => {
+client.on("messageCreate", async (message) => {
   if (message.channel.id === "894103257335603270" && !message.author.bot) {
     let reply = await chat.chat(message.content);
     message.reply(reply);
