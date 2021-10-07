@@ -9,7 +9,7 @@ module.exports = {
   options: [
     {
       name: "thread",
-      description: "Title of the thread.",
+      description: "Name of the thread.",
       required: true,
       type: "STRING",
     },

@@ -226,6 +226,11 @@ module.exports = {
   },
 };
 
+/**
+ *
+ * @param ms
+ * @returns {string}
+ */
 function msToTime(ms) {
   let seconds = (ms / 1000).toFixed(1);
   let minutes = (ms / (1000 * 60)).toFixed(1);
