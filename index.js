@@ -36,6 +36,7 @@ client.on("messageCreate", async (message) => {
 process.on("exit", () => {
   dbObjects.mongoo.connection.close().then(() => {
     console.log("MongoDb connection closed.");
+    console.log("exit");
     process.exit();
   });
 });
@@ -44,20 +45,23 @@ process.on("exit", () => {
 process.on("SIGINT", () => {
   dbObjects.mongoo.connection.close().then(() => {
     console.log("MongoDb connection closed.");
+    console.log("SIGINT");
     process.exit();
   });
 });
 process.on("SIGTERM", () => {
   dbObjects.mongoo.connection.close().then(() => {
     console.log("MongoDb connection closed.");
+    console.log("SIGTERM");
     process.exit();
   });
 });
 
 // This will prevent dirty exit on code-fault crashes:
-process.on("uncaughtException", () => {
+process.on("uncaughtException", (err) => {
   dbObjects.mongoo.connection.close().then(() => {
     console.log("MongoDb connection closed.");
+    console.log(`"uncaughtException:  ${err}`);
     process.exit();
   });
 });

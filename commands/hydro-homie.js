@@ -3,14 +3,11 @@ This command integrates hydro homie 😎😎😎
 */
 
 const { MessageEmbed } = require("discord.js");
-const {
-  hydroHomieTimer,
-  hydroHomieLoops,
-  hydroHomieStats,
-} = require("../db/dbObjects");
+const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
+const reminders = new Map();
 
 module.exports = {
-  name: "hydrohomie",
+  name: "hydro-homie",
   description: `Hydro Homie 😎.`,
   options: [
     {
@@ -98,11 +95,13 @@ module.exports = {
       const minute = interaction.options.getNumber("minute");
       const timer = hour * 3600000 + minute * 60000;
 
-      hydroHomieTimer.set(interaction.member.id, timer);
-
-      interaction.reply(
-        `Timer set, you will be reminded in ${msToTime(timer)}.`
-      );
+      interaction.reply({
+        content: `Timer set, you will be reminded every ${msToTime(
+          timer
+        )} **after your start/restart the timer**.`,
+        ephemeral: true,
+      });
+      await hydroHomieFunctions.setTime(interaction.user.id, minute, hour);
     } else if (interaction.options.getSubcommand() === "info") {
       const infoEmbed = new MessageEmbed()
         .setColor(2471891)
@@ -129,51 +128,98 @@ module.exports = {
           "https://qtxasset.com/styles/breakpoint_sm_default_480px_w/s3/FierceHealthcare-1510848155/2WFm5vUI_400x400.jpg/2WFm5vUI_400x400.jpg?g.X4eBSsB05SoQ8guptUZVgCvxSU5RdT&itok=K0tE0mIm"
         );
 
-      await interaction.reply({ embeds: [infoEmbed] });
+      await interaction.reply({ embeds: [infoEmbed], ephemeral: true });
     } else if (interaction.options.getSubcommand() === "reminder") {
       const reminder = interaction.options.getString("reminder");
       switch (reminder) {
         case "start":
-          console.log(!hydroHomieLoops.has(interaction.member.id));
-          if (!hydroHomieLoops.has(interaction.member.id)) {
-            let timer = hydroHomieTimer.get(interaction.member.id);
-            if (!timer) {
-              timer = 300000;
-            }
-            const interval = setInterval(function () {
-              interaction.member.send("Here is your water reminder.");
-            }, timer);
-            hydroHomieLoops.set(interaction.member.id, interval);
+          if (reminders.has(interaction.user)) {
+            interaction.reply({
+              content: `Stop your previous reminder first.`,
+              ephemeral: true,
+            });
+          } else {
+            await hydroHomieFunctions.setReminder(interaction.user.id, true);
+            hydroHomieFunctions
+              .getDocument(interaction.user.id)
+              .then((data) => {
+                let timer;
+                try {
+                  timer =
+                    data[0].timer[0] * 3600000 + data[0].timer[1] * 60000 || 0;
+                  if (timer < 300000) {
+                    return interaction.reply({
+                      content: `Set a reminder higher than 5 minutes.`,
+                      ephemeral: true,
+                    });
+                  }
+
+                  const interval = setInterval(() => {
+                    interaction.member.send("Here is your water reminder.");
+                  }, timer);
+                  reminders.set(interaction.user, interval);
+
+                  interaction.reply({
+                    content: `Reminder has been enabled.`,
+                    ephemeral: true,
+                  });
+                } catch (e) {
+                  interaction.reply({
+                    content: `There was an error with your request.`,
+                    ephemeral: true,
+                  });
+                }
+              });
           }
           break;
         case "stop":
-          if (hydroHomieLoops.has(interaction.member.id)) {
-            clearInterval(hydroHomieLoops.get(interaction.member.id));
-            hydroHomieLoops.delete(interaction.member.id);
+          if (reminders.has(interaction.user)) {
+            await hydroHomieFunctions.setReminder(interaction.user.id, false);
+            clearInterval(reminders.get(interaction.user));
+            reminders.delete(interaction.user);
+
+            interaction.reply({
+              content: `Reminder has been disabled.`,
+              ephemeral: true,
+            });
+          } else {
+            interaction.reply({
+              content: `You didn't have a reminder to disable.`,
+              ephemeral: true,
+            });
           }
+
           break;
       }
-
-      interaction.reply(`Loop has been set to ${reminder}.`);
     } else if (interaction.options.getSubcommand() === "log") {
       const amount = interaction.options.getNumber("oz");
 
-      if (!hydroHomieStats.has(interaction.member.id)) {
-        hydroHomieStats.set(interaction.member.id, 0);
-      }
-      const currentWater = hydroHomieStats.get(interaction.member.id) + amount;
-      hydroHomieStats.set(interaction.member.id, currentWater);
+      await hydroHomieFunctions.addWater(interaction.user.id, amount);
 
-      interaction.reply(
-        `You have added ${amount} oz. of water for a new total of ${currentWater} oz.`
-      );
+      hydroHomieFunctions.getDocument(interaction.user.id).then((data) => {
+        let currentWater = 0;
+        try {
+          currentWater = data[0].waterDrank;
+        } catch (e) {
+          // console.log(e);
+        }
+        interaction.reply({
+          content: `You have added ${amount} oz. of water for a new total of ${currentWater} oz.`,
+          ephemeral: true,
+        });
+      });
     } else if (interaction.options.getSubcommand() === "stats") {
-      let amount = 0;
-
-      if (hydroHomieStats.has(interaction.member.id)) {
-        amount = hydroHomieStats.get(interaction.member.id);
-      }
-      interaction.reply(`You have drank ${amount} fluid ounces of water.`);
+      hydroHomieFunctions.getDocument(interaction.user.id).then((data) => {
+        let currentWater = 0;
+        try {
+          currentWater = data[0].waterDrank;
+        } catch (e) {
+          // console.log(e);
+        }
+        interaction.reply(
+          `You have drank ${currentWater} fluid ounces of water.`
+        );
+      });
     } else {
       interaction.reply({ content: "No command chosen", ephemeral: true });
     }

@@ -3,7 +3,7 @@ event that happens on start up to display activity
  */
 
 const mongo = require("../db/mongo");
-const dbObjects = require("../db/dbObjects");
+let dbObjects = require("../db/dbObjects");
 
 module.exports = {
   name: "ready",
