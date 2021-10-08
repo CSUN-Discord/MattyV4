@@ -47,7 +47,7 @@ process.on("SIGTERM", () => {
 process.on("uncaughtException", (err) => {
   dbObjects.mongoo.connection.close().then(() => {
     console.log("MongoDb connection closed.");
-    console.log(`"uncaughtException:  ${err}`);
+    console.log(`uncaughtException:  ${err}`);
     process.exit();
   });
 });
