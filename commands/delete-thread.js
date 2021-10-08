@@ -3,7 +3,7 @@ This command will delete a thread
 */
 
 module.exports = {
-  name: "deletethread",
+  name: "delete-thread",
   description: "Used to delete a thread",
   permission: ["SEND_MESSAGES"],
   options: [

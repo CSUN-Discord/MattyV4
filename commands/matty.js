@@ -7,16 +7,6 @@ This command will send always a matador
 const { MessageAttachment } = require("discord.js");
 
 module.exports = {
-  // ...new SlashCommandBuilder()
-  //   .setName("matty")
-  //   .setDescription("Whose Matty?")
-  //   .addSubcommand((subcommand) =>
-  //     subcommand.setName("matty").setDescription("Who really is Matty.")
-  //   ),
-  //
-  // // .addSubcommand((subcommand) =>
-  // //   subcommand.setName("onceamatador").setDescription("Always a Matador!")
-  // // ),
   name: "matty",
   description: "Whose Matty?",
   options: [

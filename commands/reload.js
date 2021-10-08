@@ -13,7 +13,7 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
-    await interaction.reply("Bot is reloading.");
+    await interaction.reply({ content: "Bot is reloading.", ephemeral: true });
     process.exit();
   },
 };

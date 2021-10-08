@@ -3,6 +3,7 @@ This command will create a new thread for the roommate search
 */
 
 const { MessageEmbed } = require("discord.js");
+const { roommateChannelId } = require("../validation/channels.json");
 
 module.exports = {
   name: "roommate",
@@ -57,16 +58,21 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
+    if (interaction.channel.id !== roommateChannelId)
+      return interaction.reply({
+        content: "This command only works in the roommate channel.",
+        ephemeral: true,
+      });
     const title = interaction.options.getString("title");
     const lookingFor = interaction.options.getString("looking_for");
     const price = interaction.options.getString("price");
     const details = interaction.options.getString("details");
     const links = interaction.options.getString("links");
 
-    const marketPlaceChannel =
-      interaction.client.channels.cache.get("570809696135544835");
+    const roomateChannel =
+      interaction.client.channels.cache.get(roommateChannelId);
 
-    const thread = await marketPlaceChannel.threads.create({
+    const thread = await roomateChannel.threads.create({
       name: title,
       autoArchiveDuration: "MAX",
       reason: `${interaction.member}'s new listing.`,
@@ -85,10 +91,13 @@ module.exports = {
 
     await thread.setLocked(true);
     await thread.send(
-      `${interaction.member}, Created a thread for: ${title}. Please use the deletethread command when this listing is completed.`
+      `${interaction.member}, Created a thread for: ${title}. Please use the delete-thread command when this listing is completed.`
     );
     await thread.send({ embeds: [listingEmbed] });
 
-    await interaction.reply("Submission received.");
+    await interaction.reply({
+      content: "Submission received.",
+      ephemeral: true,
+    });
   },
 };

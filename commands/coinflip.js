@@ -1,6 +1,5 @@
 /*
 This command will flip a coin
-
 */
 
 const { MessageAttachment } = require("discord.js");

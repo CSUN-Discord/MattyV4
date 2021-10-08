@@ -23,22 +23,6 @@ module.exports = {
         .setRequired(false)
     )
     .setDescription("Prunes messages from the channel or a specific user."),
-  // name: "prune",
-  // description: "Prunes messages from the channel or a specific user.",
-  // options: [
-  //   {
-  //     name: "amount",
-  //     description: "The amount of messages to delete from a channel or target.",
-  //     required: true,
-  //     type: "NUMBER",
-  //   },
-  //   {
-  //     name: "user",
-  //     description: "The user to delete the messages of.",
-  //     required: false,
-  //     type: "USER",
-  //   },
-  // ],
   permission: ["MANAGE_MESSAGES"],
 
   /**
@@ -67,14 +51,14 @@ module.exports = {
         responseEmbed.setDescription(
           `🧹 Cleared ${messages.size} messages from ${user}.`
         );
-        interaction.reply({ embeds: [responseEmbed] });
+        interaction.reply({ embeds: [responseEmbed], ephemeral: true });
       });
     } else {
       await interaction.channel.bulkDelete(amount, true).then((messages) => {
         responseEmbed.setDescription(
           `🧹 Cleared ${messages.size} messages from this channel.`
         );
-        interaction.reply({ embeds: [responseEmbed] });
+        interaction.reply({ embeds: [responseEmbed], ephemeral: true });
       });
     }
   },

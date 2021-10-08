@@ -3,6 +3,7 @@ This command will create a new thread depending on the item being sold
 */
 
 const { MessageEmbed } = require("discord.js");
+const { marketplaceChannelId } = require("../validation/channels.json");
 
 module.exports = {
   name: "marketplace",
@@ -69,6 +70,11 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
+    if (interaction.channel.id !== marketplaceChannelId)
+      return interaction.reply({
+        content: "This command only works in the marketplace channel.",
+        ephemeral: true,
+      });
     const title = interaction.options.getString("title");
     const description = interaction.options.getString("description");
     const price = interaction.options.getNumber("price");
@@ -76,7 +82,7 @@ module.exports = {
     const pictureLink = interaction.options.getString("picture_link");
 
     const marketPlaceChannel =
-      interaction.client.channels.cache.get("523967992917393418");
+      interaction.client.channels.cache.get(marketplaceChannelId);
 
     const thread = await marketPlaceChannel.threads.create({
       name: title,
@@ -97,10 +103,13 @@ module.exports = {
 
     await thread.setLocked(true);
     await thread.send(
-      `${interaction.member}, Created a thread for: ${title}. Please use the deletethread command when this listing is completed.`
+      `${interaction.member}, Created a thread for: ${title}. Please use the delete-thread command when this listing is completed.`
     );
     await thread.send({ embeds: [listingEmbed] });
 
-    await interaction.reply("Submission received.");
+    await interaction.reply({
+      content: "Submission received.",
+      ephemeral: true,
+    });
   },
 };

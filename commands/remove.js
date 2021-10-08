@@ -5,6 +5,7 @@ This command will ban the mentioned user with a reason
  */
 
 const { MessageEmbed } = require("discord.js");
+const { modOnlyChannelId } = require("../validation/channels.json");
 
 module.exports = {
   name: "remove",
@@ -59,7 +60,6 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
-    const modChannel = "739198184857010176";
     const user = interaction.options.getUser("user");
     const reason = interaction.options.getString("reason");
     const member = interaction.options.getMember("user");
@@ -71,7 +71,7 @@ module.exports = {
         .addField("With the reason:", `${reason}`);
 
       interaction.client.channels.cache
-        .get(modChannel)
+        .get(modOnlyChannelId)
         .send({ embeds: [responseEmbed] });
 
       await member.kick(reason);
@@ -83,7 +83,7 @@ module.exports = {
         .addField("With the reason:", `${reason}`);
 
       interaction.client.channels.cache
-        .get(modChannel)
+        .get(modOnlyChannelId)
         .send({ embeds: [responseEmbed] });
 
       await member.ban({ reason: reason });

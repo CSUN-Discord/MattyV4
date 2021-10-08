@@ -53,6 +53,7 @@ module.exports = {
       console.log(error);
       await interaction.reply({
         content: "Can't find song lyrics.",
+        ephemeral: false,
       });
     }
   },

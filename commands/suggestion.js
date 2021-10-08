@@ -4,7 +4,7 @@ This command will send the suggestion to the mod channel
 
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
-const suggestionChannel = "893702036300898425";
+const { suggestionsChannelId } = require("../validation/channels.json");
 
 module.exports = {
   ...new SlashCommandBuilder()
@@ -34,11 +34,11 @@ module.exports = {
 
     await interaction.reply({
       content: "Submission received.",
-      fetchReply: true,
+      ephemeral: true,
     });
 
     interaction.client.channels.cache
-      .get(suggestionChannel)
+      .get(suggestionsChannelId)
       .send({ embeds: [responseEmbed] })
       .then((msg) => {
         msg.react(`👍`);
