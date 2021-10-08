@@ -4,6 +4,7 @@ event that happens on start up to display activity
 
 const mongo = require("../db/mongo");
 let dbObjects = require("../db/dbObjects");
+const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
 
 module.exports = {
   name: "ready",
@@ -20,6 +21,8 @@ module.exports = {
       console.log(`Connected to database.`);
       dbObjects.mongoo = mongoose;
     });
+
+    hydroHomieFunctions.startReminders(client);
 
     console.log(`Ready! Logged in as ${client.user.tag}`);
   },

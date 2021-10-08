@@ -1,4 +1,5 @@
 const hydroHomieSchema = require("../schemas/hydroHomieSchema");
+const { reminders } = require("../dbObjects");
 
 module.exports = {
   addWater: async function (userId, ounces) {
@@ -76,5 +77,37 @@ module.exports = {
     } catch (e) {
       console.log(e);
     }
+  },
+
+  startReminders: function (client) {
+    try {
+      hydroHomieSchema.find(
+        {
+          reminder: true,
+        },
+        (error, data) => {
+          if (error) {
+            console.log(error);
+          } else {
+            for (let i = 0; i < data.length; i++) {
+              try {
+                client.users.fetch(data[i].userId).then((user) => {
+                  const timer =
+                    data[i].timer[0] * 3600000 + data[i].timer[1] * 60000 || 0;
+                  if (timer > 299999) {
+                    const interval = setInterval(() => {
+                      user.send("Here is your water reminder.");
+                    }, timer);
+                    reminders.set(user, interval);
+                  }
+                });
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          }
+        }
+      );
+    } catch (e) {}
   },
 };

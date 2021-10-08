@@ -4,7 +4,7 @@ This command integrates hydro homie 😎😎😎
 
 const { MessageEmbed } = require("discord.js");
 const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
-const reminders = new Map();
+const { reminders } = require("../db/dbObjects");
 
 module.exports = {
   name: "hydro-homie",
@@ -212,7 +212,7 @@ module.exports = {
       hydroHomieFunctions.getDocument(interaction.user.id).then((data) => {
         let currentWater = 0;
         try {
-          currentWater = data[0].waterDrank;
+          currentWater = data[0].waterDrank || 0;
         } catch (e) {
           // console.log(e);
         }
