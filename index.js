@@ -1,6 +1,6 @@
 // Import classes and files
 
-//test
+//test commit
 
 const { token } = require("./config.json");
 const { Client, Collection } = require("discord.js");
