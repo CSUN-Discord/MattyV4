@@ -5,6 +5,12 @@ event that listens for message creation
 const Chat = require("easy-discord-chatbot");
 const chat = new Chat({ name: "Matty" });
 
+const {
+  marketplaceChannelId,
+  mattyChannelId,
+  roommateChannelId,
+  welcomeChannelId,
+} = require("../validation/channels.json");
 module.exports = {
   name: "messageCreate",
 
@@ -14,12 +20,12 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(message) {
-    if (message.channel.id === "894103257335603270" && !message.author.bot) {
+    if (message.channel.id === mattyChannelId && !message.author.bot) {
       let reply = await chat.chat(message.content);
       await message.reply(reply);
     }
 
-    if (message.channel.id === "523967992917393418" && !message.author.bot) {
+    if (message.channel.id === marketplaceChannelId && !message.author.bot) {
       message
         .reply("Use the slash command **/marketplace**.")
         .then((msg) => {
@@ -29,7 +35,7 @@ module.exports = {
         .catch();
     }
 
-    if (message.channel.id === "570809696135544835" && !message.author.bot) {
+    if (message.channel.id === roommateChannelId && !message.author.bot) {
       message
         .reply("Use the slash command **/roommate**.")
         .then((msg) => {
@@ -40,7 +46,7 @@ module.exports = {
     }
 
     if (
-      message.channel.id === "496834947894476810" &&
+      message.channel.id === welcomeChannelId &&
       !message.author.bot &&
       !message.member.roles.cache.some((role) => role.name === "Admin") &&
       !message.member.roles.cache.some((role) => role.name === "Mod") &&
