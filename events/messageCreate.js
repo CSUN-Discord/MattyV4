@@ -28,7 +28,7 @@ module.exports = {
         })
         .catch();
     }
-    //
+
     if (message.channel.id === "570809696135544835" && !message.author.bot) {
       message
         .reply("Use the slash command **/roommate**.")
