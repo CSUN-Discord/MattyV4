@@ -16,7 +16,7 @@ module.exports = {
    */
   async execute(interaction) {
     await interaction.reply({
-      content: `Websocket heartbeat: ${interaction.client.ws.ping}ms.`,
+      content: `Websocket heartbeat: ${interaction.client.ws.ping} ms.`,
       ephemeral: true,
     });
   },

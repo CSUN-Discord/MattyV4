@@ -5,7 +5,6 @@ event that happens on start up to display activity
 const mongo = require("../db/mongo");
 let dbObjects = require("../db/dbObjects");
 const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
-//testing
 module.exports = {
   name: "ready",
   once: true,
