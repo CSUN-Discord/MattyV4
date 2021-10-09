@@ -15,9 +15,15 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
-    await interaction.reply({
-      content: `Websocket heartbeat: ${interaction.client.ws.ping}ms.`,
-      ephemeral: true,
+    const sent = await interaction.reply({
+      content: "Pinging...",
+      fetchReply: true,
     });
+
+    await interaction.editReply(
+      `\n Roundtrip latency: ${
+        sent.createdTimestamp - interaction.createdTimestamp
+      }ms \n Websocket heartbeat: ${interaction.client.ws.ping}ms.`
+    );
   },
 };
