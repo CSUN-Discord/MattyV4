@@ -1,7 +1,6 @@
 /*
 This command will give out the initial roles and ping a mod/helper
 */
-// const {} = require("./config.json");
 const Discord = require("discord.js");
 const { MessageActionRow, MessageEmbed, MessageButton } = require("discord.js");
 module.exports = {
