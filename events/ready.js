@@ -18,7 +18,7 @@ module.exports = {
     });
 
     await mongo().then(async (mongoose) => {
-      console.log(`Connected to database.`);
+      console.log(`Connected to mongoDB.`);
       dbObjects.mongoo = mongoose;
     });
 
