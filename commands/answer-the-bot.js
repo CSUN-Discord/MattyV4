@@ -71,7 +71,8 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
-    const major = interaction.options.getString("major");
+    let major = interaction.options.getString("major");
+    major = major.charAt(0).toUpperCase() + major.slice(1);
     const year = interaction.options.getString("year");
     const housing = interaction.options.getString("housing");
 
@@ -167,6 +168,14 @@ module.exports = {
               })
               .then((inp) => {
                 try {
+                  requestEmbed.setDescription(
+                    `${input.user} has been added to the server.`
+                  );
+                  input.editReply({
+                    content: `User has been added.`,
+                    embeds: [requestEmbed],
+                    components: [],
+                  });
                   if (inp.customId === "addUser") {
                     inp.reply({
                       content: "User updated.",
