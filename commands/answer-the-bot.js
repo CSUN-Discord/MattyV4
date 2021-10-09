@@ -156,6 +156,7 @@ module.exports = {
 
             const addFilter = (user) =>
               user.member.roles.cache.some((role) => role.name === "Mod") ||
+              user.member.roles.cache.some((role) => role.name === "Admin") ||
               user.member.roles.cache.some((role) => role.name === "Helpers");
 
             await input.channel
