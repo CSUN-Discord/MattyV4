@@ -22,7 +22,7 @@ module.exports = async (client) => {
     const command = require(file);
     if (!command.name)
       return table.addRow(file.split("/"[7]), `⚠ Failed`, "Missing a name.");
-    if (!command.description)
+    if (!command.description && !command.context)
       return table.addRow(command.name, `⚠ Failed`, "Missing a description.");
     if (command.permission) {
       if (command.permission.every((ai) => perms.includes(ai)))
