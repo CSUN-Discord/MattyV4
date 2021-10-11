@@ -5,7 +5,7 @@ This command will send the info about a user
 const { MessageEmbed } = require("discord.js");
 
 module.exports = {
-  name: "user-info",
+  name: "user-info-app",
   type: "USER",
   context: true,
   permission: ["SEND_MESSAGES"],
