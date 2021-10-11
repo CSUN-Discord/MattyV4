@@ -159,6 +159,12 @@ module.exports = {
               user.member.roles.cache.some((role) => role.name === "Admin") ||
               user.member.roles.cache.some((role) => role.name === "Helpers");
 
+            setTimeout(function () {
+              input.editReply({
+                components: [],
+              });
+            }, 841000);
+
             await input.channel
               .awaitMessageComponent({
                 filter: addFilter,
