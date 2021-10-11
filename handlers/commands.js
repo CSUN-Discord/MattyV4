@@ -80,29 +80,5 @@ module.exports = async (client) => {
       }, []);
       guild.commands.permissions.set({ fullPermissions });
     });
-    // const MainGuild = await client.guilds.cache.get(guildId);
-    //
-    // MainGuild.commands.set(commandsArray).then(async (command) => {
-    //   const Roles = (commandName) => {
-    //     const cmdPerms = commandsArray.find(
-    //       (c) => c.name === commandName
-    //     ).permission;
-    //     if (!cmdPerms) return null;
-    //
-    //     return MainGuild.roles.cache.filter((r) => r.permissions.has(cmdPerms));
-    //   };
-    //
-    //   const fullPermissions = command.reduce((accumulator, r) => {
-    //     const roles = Roles(r.name);
-    //     if (!roles) return accumulator;
-    //
-    //     const permissions = roles.reduce((a, r) => {
-    //       return [...a, { id: r.id, type: "ROLE", permission: true }];
-    //     }, []);
-    //     return [...accumulator, { id: r.id, permissions }];
-    //   }, []);
-    //
-    //   await MainGuild.commands.permissions.set({ fullPermissions });
-    // });
   });
 };

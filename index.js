@@ -26,6 +26,10 @@ process.on("exit", () => {
       console.log("exit");
       process.exit();
     });
+  else {
+    console.log("exit");
+    process.exit();
+  }
 });
 
 // This will handle kill commands, such as CTRL+C:
@@ -36,6 +40,10 @@ process.on("SIGINT", () => {
       console.log("SIGINT");
       process.exit();
     });
+  else {
+    console.log("SIGINT");
+    process.exit();
+  }
 });
 process.on("SIGTERM", () => {
   if (dbObjects.mongoo)
@@ -44,6 +52,10 @@ process.on("SIGTERM", () => {
       console.log("SIGTERM");
       process.exit();
     });
+  else {
+    console.log("SIGTERM");
+    process.exit();
+  }
 });
 
 // This will prevent dirty exit on code-fault crashes:
@@ -54,6 +66,10 @@ process.on("uncaughtException", (err) => {
       console.log(`uncaughtException:  ${err}`);
       process.exit();
     });
+  else {
+    console.log(`uncaughtException:  ${err}`);
+    process.exit();
+  }
 });
 
 //start the bot with the token from the config file
