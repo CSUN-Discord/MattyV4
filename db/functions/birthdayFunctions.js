@@ -146,6 +146,38 @@ module.exports = {
     } catch (e) {}
   },
 
+  getPersonBirthday: function (interaction, id) {
+    try {
+      birthdaySchema.find({ userId: id }, (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (data.length < 1) {
+            interaction
+              .editReply({
+                content: `No birthdays on for ${interaction.guild.members.cache.get(
+                  id
+                )}.`,
+                ephemeral: true,
+              })
+              .then((r) => {});
+          } else {
+            interaction
+              .editReply({
+                content: `Birthday for ${interaction.guild.members.cache.get(
+                  id
+                )}:`,
+                ephemeral: true,
+              })
+              .then((r) => {
+                printBirthday(data, data[0].month, interaction);
+              });
+          }
+        }
+      });
+    } catch (e) {}
+  },
+
   getDayMonthBirthday: function (interaction, month, day) {
     try {
       birthdaySchema.find({ month: month, day: day }, (err, data) => {

@@ -215,9 +215,8 @@ module.exports = {
         });
     } else if (interaction.options.getSubcommand() === "view") {
       if (member) {
-        console.log("display specific person's birthday");
-      }
-      if (day && (day > 31 || day < 1))
+        birthdayFunctions.getPersonBirthday(interaction, member.id);
+      } else if (day && (day > 31 || day < 1))
         return interaction.editReply({
           content: "Incorrect day.",
           ephemeral: true,

@@ -20,36 +20,40 @@ require("./handlers/commands")(client);
 // //https://stackoverflow.com/questions/36979146/is-a-connection-to-mongodb-automatically-closed-on-process-exit
 // This will handle process.exit():
 process.on("exit", () => {
-  dbObjects.mongoo.connection.close().then(() => {
-    console.log("MongoDb connection closed.");
-    console.log("exit");
-    process.exit();
-  });
+  if (dbObjects.mongoo)
+    dbObjects.mongoo.connection.close().then(() => {
+      console.log("MongoDb connection closed.");
+      console.log("exit");
+      process.exit();
+    });
 });
 
 // This will handle kill commands, such as CTRL+C:
 process.on("SIGINT", () => {
-  dbObjects.mongoo.connection.close().then(() => {
-    console.log("MongoDb connection closed.");
-    console.log("SIGINT");
-    process.exit();
-  });
+  if (dbObjects.mongoo)
+    dbObjects.mongoo.connection.close().then(() => {
+      console.log("MongoDb connection closed.");
+      console.log("SIGINT");
+      process.exit();
+    });
 });
 process.on("SIGTERM", () => {
-  dbObjects.mongoo.connection.close().then(() => {
-    console.log("MongoDb connection closed.");
-    console.log("SIGTERM");
-    process.exit();
-  });
+  if (dbObjects.mongoo)
+    dbObjects.mongoo.connection.close().then(() => {
+      console.log("MongoDb connection closed.");
+      console.log("SIGTERM");
+      process.exit();
+    });
 });
 
 // This will prevent dirty exit on code-fault crashes:
 process.on("uncaughtException", (err) => {
-  dbObjects.mongoo.connection.close().then(() => {
-    console.log("MongoDb connection closed.");
-    console.log(`uncaughtException:  ${err}`);
-    process.exit();
-  });
+  if (dbObjects.mongoo)
+    dbObjects.mongoo.connection.close().then(() => {
+      console.log("MongoDb connection closed.");
+      console.log(`uncaughtException:  ${err}`);
+      process.exit();
+    });
 });
 
 //start the bot with the token from the config file
