@@ -209,7 +209,7 @@ module.exports = {
       } else
         await interaction.editReply({
           content: `Message ${
-            interaction.guild.members.cache.get(497158229881651220) || "Kaeya"
+            interaction.guild.members.cache.get("497158229881651220") || "Kaeya"
           } or someone from the mod team to remove a user's birthday.`,
           ephemeral: true,
         });
