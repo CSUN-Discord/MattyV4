@@ -25,6 +25,7 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
+    await interaction.deferReply();
     const songName = interaction.options.getString("song");
 
     try {
@@ -36,7 +37,7 @@ module.exports = {
 
       const [first, ...rest] = Util.splitMessage(lyrics);
 
-      await interaction.reply({
+      await interaction.followUp({
         content: first,
       });
 
@@ -51,7 +52,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
-      await interaction.reply({
+      await interaction.followUp({
         content: "Can't find song lyrics.",
         ephemeral: false,
       });
