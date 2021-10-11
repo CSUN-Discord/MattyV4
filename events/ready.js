@@ -5,6 +5,8 @@ event that happens on start up to display activity
 const mongo = require("../db/mongo");
 let dbObjects = require("../db/dbObjects");
 const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
+const birthdayFunctions = require("../db/functions/birthdayFunctions");
+
 module.exports = {
   name: "ready",
   once: true,
@@ -22,6 +24,7 @@ module.exports = {
     });
 
     hydroHomieFunctions.startReminders(client);
+    birthdayFunctions.birthday(client);
 
     console.log(`Ready! Logged in as ${client.user.tag}`);
   },

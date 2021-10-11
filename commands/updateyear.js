@@ -25,7 +25,7 @@ module.exports = {
   execute: async function (interaction) {
     const year = interaction.options.getRole("year");
 
-    let freshman = interaction.guild.roles.cache.find(
+    const freshman = interaction.guild.roles.cache.find(
       (r) => r.name === "Freshman"
     );
     const sophomore = interaction.guild.roles.cache.find(
