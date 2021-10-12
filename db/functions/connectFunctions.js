@@ -44,4 +44,15 @@ module.exports = {
       console.log(e);
     }
   },
+
+  getDocument: async function (userId) {
+    try {
+      return connectSchema.find({
+        userId: userId,
+      });
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  },
 };
