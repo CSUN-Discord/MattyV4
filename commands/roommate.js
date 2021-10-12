@@ -89,7 +89,6 @@ module.exports = {
       );
     if (links) listingEmbed.addField("Pictures: ", `${links}`);
 
-    await thread.setLocked(true);
     await thread.send(
       `${interaction.member}, Created a thread for: ${title}. Please use the delete-thread command when this listing is completed.`
     );
