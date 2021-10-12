@@ -8,6 +8,8 @@ const Discord = require("discord.js");
 const inGame = new Set();
 const games = new Map();
 
+const connectFunctions = require("../db/functions/connectFunctions");
+
 module.exports = {
   name: "connect-4",
   description: "Use to check if bot is active.",
@@ -162,8 +164,19 @@ module.exports = {
                 //someone lost the game or it was a tie
 
                 let currentWinner = games.get(interaction.user).userOne;
+
+                let currentWinnerId = games.get(interaction.user).userOne.id;
+                let currentLoserId = games.get(interaction.user).userTwo.id;
+
                 if (games.get(interaction.user).currentMove === currentWinner) {
                   currentWinner = games.get(interaction.user).userTwo;
+                  currentWinnerId = games.get(interaction.user).userTwo.id;
+                  currentLoserId = games.get(interaction.user).userOne.id;
+                }
+
+                if (games.get(interaction.user).game.winner !== null) {
+                  await connectFunctions.addWin(currentWinnerId);
+                  await connectFunctions.addLoss(currentLoserId);
                 }
 
                 if (games.get(interaction.user).game.winner === null) {
@@ -212,11 +225,20 @@ module.exports = {
                     //someone lost due to inactivity
 
                     let currentWinner = games.get(interaction.user).userOne;
+
+                    let currentWinnerId = games.get(interaction.user).userOne
+                      .id;
+                    let currentLoserId = games.get(interaction.user).userTwo.id;
+
                     if (
                       games.get(interaction.user).currentMove === currentWinner
                     ) {
                       currentWinner = games.get(interaction.user).userTwo;
+                      currentWinnerId = games.get(interaction.user).userTwo.id;
+                      currentLoserId = games.get(interaction.user).userOne.id;
                     }
+                    await connectFunctions.addWin(currentWinnerId);
+                    await connectFunctions.addLoss(currentLoserId);
 
                     let noResEmbed = new Discord.MessageEmbed()
                       .setTitle("Game Ended")
@@ -252,11 +274,20 @@ module.exports = {
                     //someone gave up
 
                     let currentWinner = games.get(interaction.user).userOne;
+
+                    let currentWinnerId = games.get(interaction.user).userOne
+                      .id;
+                    let currentLoserId = games.get(interaction.user).userTwo.id;
+
                     if (
                       games.get(interaction.user).currentMove === currentWinner
                     ) {
                       currentWinner = games.get(interaction.user).userTwo;
+                      currentWinnerId = games.get(interaction.user).userTwo.id;
+                      currentLoserId = games.get(interaction.user).userOne.id;
                     }
+                    await connectFunctions.addWin(currentWinnerId);
+                    await connectFunctions.addLoss(currentLoserId);
 
                     let stopEmbed = new Discord.MessageEmbed()
                       .setTitle("Game Ended")
