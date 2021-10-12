@@ -37,10 +37,10 @@ module.exports = {
                     content: first,
                   })
                   .then((r) => {
-                    // Max characters were reached so send the rest of the lyrics
+                    // Max characters were reached so send the rest of the movies
                     if (rest.length) {
                       for (const text of rest) {
-                        // send the rest of the lyrics
+                        // send the rest of the movies
                         interaction.followUp({
                           content: text,
                         });

@@ -2,21 +2,19 @@
 This command will return the lyrics of a song
 */
 
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const Genius = require("genius-lyrics");
-const ACCESS_TOKEN =
-  "7R8YkN3OmB0eBcH6AniWDTUUk7HdX8nhIkjkyIK6DFhaBl7aqzIqyGnuLvaH-Utl";
-const geniusClient = new Genius.Client(ACCESS_TOKEN);
-const { Util } = require("discord.js");
-
+const axios = require("axios");
+const { MessageEmbed, Util } = require("discord.js");
 module.exports = {
-  ...new SlashCommandBuilder()
-    .setName("lyrics")
-    .setDescription("Gives the lyrics of a song from Genius.com.")
-    .addStringOption((option) =>
-      option.setName("song").setDescription("Song name.").setRequired(true)
-    ),
-
+  name: "lyrics",
+  description: "Gives the lyrics of a song from Genius.com.",
+  options: [
+    {
+      name: "song",
+      description: "Song name.",
+      type: "STRING",
+      required: true,
+    },
+  ],
   permission: ["SEND_MESSAGES"],
 
   /**
@@ -28,34 +26,43 @@ module.exports = {
     await interaction.deferReply();
     const songName = interaction.options.getString("song");
 
-    try {
-      //search for the lyrics on genius using the song name
+    const url = new URL(`https://some-random-api.ml/lyrics`);
+    url.searchParams.append("title", songName);
 
-      const searches = await geniusClient.songs.search(songName);
-      const firstSong = searches[0];
-      const lyrics = await firstSong.lyrics();
+    try {
+      const { data } = await axios.get(url.href);
+
+      const lyrics = data.lyrics;
 
       const [first, ...rest] = Util.splitMessage(lyrics);
 
-      await interaction.followUp({
-        content: first,
+      const msg = new MessageEmbed({
+        title: `${data.title} - ${data.author}`,
+        thumbnail: { url: data.thumbnail.genius },
+        description: first,
       });
 
-      // Max characters were reached so send the rest of the lyrics
-      if (rest.length) {
-        for (const text of rest) {
-          // send the rest of the lyrics
-          await interaction.followUp({
-            content: text,
-          });
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      await interaction.followUp({
-        content: "Can't find song lyrics.",
-        ephemeral: false,
-      });
+      interaction
+        .followUp({
+          embeds: [msg],
+        })
+        .then((r) => {
+          // Max characters were reached so send the rest of the lyrics
+          if (rest.length) {
+            for (const text of rest) {
+              // send the rest of the lyrics
+              const msg = new MessageEmbed({
+                description: text,
+              });
+              interaction.followUp({
+                embeds: [msg],
+              });
+            }
+          }
+        });
+    } catch (e) {
+      await interaction.followUp({ content: "Song lyrics not found." });
+      console.log(e);
     }
   },
 };
