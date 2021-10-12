@@ -102,7 +102,7 @@ module.exports = {
     if (pictureLink) listingEmbed.addField("Pictures: ", `${pictureLink}`);
 
     await thread.send(
-      `${interaction.member}, Created a thread for: ${title}. Please use the delete-thread command when this listing is completed.`
+      `${interaction.member}, Created a thread for: ${title}. Please use the archive-thread command when this listing is completed.`
     );
     await thread.send({ embeds: [listingEmbed] });
 
