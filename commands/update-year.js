@@ -3,11 +3,10 @@ This command will update the users school year
 */
 
 const { SlashCommandBuilder } = require("@discordjs/builders");
-// const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   ...new SlashCommandBuilder()
-    .setName("updateyear")
+    .setName("update-year")
     .addRoleOption((option) =>
       option
         .setName("year")
