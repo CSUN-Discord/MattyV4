@@ -29,6 +29,7 @@
     "ascii-table": "^0.0.9",
     "axios": "^0.22.0",
     "connect-four": "^0.0.6",
+    "crypto-price": "^0.0.6",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "glob": "^7.2.0",
@@ -37,7 +38,8 @@
     "name-to-imdb": "^3.0.2",
     "node-schedule": "^2.0.0",
     "one-liner-joke": "^1.2.2",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "yahoo-finance": "^0.3.7"
   },
   "devDependencies": {
     "easy-discord-chatbot": "^0.0.4"
