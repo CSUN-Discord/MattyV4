@@ -4,6 +4,7 @@ event that happens when someone adds a reaction to a message
 
 const {roleChangeChannelId} = require("../validation/channels.json");
 const {guildId} = require("../config.json");
+const pollFunctions = require("../db/functions/pollFunctions");
 module.exports = {
     name: "messageReactionAdd",
     once: false,
@@ -13,12 +14,13 @@ module.exports = {
      * @param user
      * @returns {Promise<void>}
      */
-    execute(reaction, user) {
+    async execute(reaction, user) {
         if (reaction.message.partial) reaction.message.fetch();
         if (reaction.partial) reaction.fetch();
         if (user.bot) return null;
-
         if (!reaction.message.guild) return null;
+
+        pollFunctions.updateReactions(reaction, user, true);
 
         const guild = reaction.client.guilds.cache.get(guildId);
 

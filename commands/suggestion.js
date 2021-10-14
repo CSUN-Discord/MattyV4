@@ -5,6 +5,7 @@ This command will send the suggestion to the mod channel
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
 const { suggestionsChannelId } = require("../validation/channels.json");
+const pollFunctions = require("../db/functions/pollFunctions");
 
 module.exports = {
   ...new SlashCommandBuilder()
@@ -43,6 +44,7 @@ module.exports = {
       .then((msg) => {
         msg.react(`👍`);
         msg.react(`👎`);
+        pollFunctions.addPoll(msg.id);
       });
   },
 };
