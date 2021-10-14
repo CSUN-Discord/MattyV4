@@ -67,7 +67,7 @@ module.exports = {
     if (interaction.options.getSubcommand() === "kick") {
       const responseEmbed = new MessageEmbed()
         .setColor("RED")
-        .setDescription(`${interaction.member} has kicked ${user}`)
+        .setDescription(`${interaction.member} has kicked ${user} (${user.tag})`)
         .addField("With the reason:", `${reason}`);
 
       interaction.client.channels.cache
@@ -79,7 +79,7 @@ module.exports = {
     } else if (interaction.options.getSubcommand() === "ban") {
       const responseEmbed = new MessageEmbed()
         .setColor("RED")
-        .setDescription(`${interaction.member} has banned ${user}`)
+        .setDescription(`${interaction.member} has banned ${user} (${user.tag})`)
         .addField("With the reason:", `${reason}`);
 
       interaction.client.channels.cache
