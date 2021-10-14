@@ -285,8 +285,8 @@ function printBirthday(fullArray, month, interaction) {
         `User: ${interaction.guild.members.cache.get(
           birthdays[i].userId
         )} (${interaction.guild.members.cache.get(
-            birthdays[i].user.tag
-        )}): ${ordinalSuffix(birthdays[i].day)}`
+            birthdays[i].userId).user.tag
+        }): ${ordinalSuffix(birthdays[i].day)}`
       );
       counter += 1;
     }
