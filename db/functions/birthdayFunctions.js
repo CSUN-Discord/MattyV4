@@ -279,11 +279,14 @@ function printBirthday(fullArray, month, interaction) {
           .setColor("RANDOM");
         counter = 0;
       }
+
       birthdayEmbed.addField(
         `\u200b`,
         `User: ${interaction.guild.members.cache.get(
           birthdays[i].userId
-        )}: ${ordinalSuffix(birthdays[i].day)}`
+        )} (${interaction.guild.members.cache.get(
+            birthdays[i].user.tag
+        )}): ${ordinalSuffix(birthdays[i].day)}`
       );
       counter += 1;
     }
