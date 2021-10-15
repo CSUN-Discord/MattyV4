@@ -4,8 +4,10 @@ event that happens on start up to display activity
 
 const mongo = require("../db/mongo");
 let dbObjects = require("../db/dbObjects");
+
 const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
 const birthdayFunctions = require("../db/functions/birthdayFunctions");
+const giveawayFunctions = require("../db/functions/giveawayFunctions");
 
 module.exports = {
   name: "ready",
@@ -25,6 +27,7 @@ module.exports = {
 
     hydroHomieFunctions.startReminders(client);
     birthdayFunctions.birthday(client);
+    giveawayFunctions.loadGiveaways(client);
 
     console.log(`Ready! Logged in as ${client.user.tag}`);
   },

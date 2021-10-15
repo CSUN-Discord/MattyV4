@@ -6,10 +6,13 @@ const { Client, Collection } = require("discord.js");
 const dbObjects = require("./db/dbObjects");
 
 // Create a new discord client
-const client = new Client({ intents: 32767, partials: ['MESSAGE', 'REACTION'] });
+const client = new Client({ intents: 32767, partials: ['MESSAGE', 'REACTION', 'USER'] });
+exports.client = client;
 
 //create a collection to store all the commands
 client.commands = new Collection();
+
+
 
 //get the events handler
 require("./handlers/events")(client);
