@@ -5,6 +5,7 @@ This command will allow you to start a giveaway
 const {MessageEmbed} = require("discord.js");
 const giveawayFunctions = require("../db/functions/giveawayFunctions");
 const { giveawaysChannelId, giveawaysVerifiedChannelId } = require("../validation/channels.json");
+const {client} = require("../../index");
 
 
 module.exports = {
@@ -363,15 +364,16 @@ module.exports = {
         const time = [year, month-1, day, hour, minute]
 
         if (location === "verified") {
-
-            const msg = await giveawaysVerifiedChannelId.send({embeds : [giveawayEmbed], fetchReply: true});
+            const giveawayChannel = client.channels.cache.get(giveawaysVerifiedChannelId)
+            const msg = await giveawayChannel.send({embeds : [giveawayEmbed], fetchReply: true});
             await msg.react(`🎉`)
 
             await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
             await giveawayFunctions.startSchedule(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
         }
         else {
-            const msg = await giveawaysChannelId.send({embeds : [giveawayEmbed], fetchReply: true});
+            const giveawayChannel = client.channels.cache.get(giveawaysChannelId)
+            const msg = await giveawayChannel.send({embeds : [giveawayEmbed], fetchReply: true});
             await msg.react(`🎉`)
 
             await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysChannelId, description, sponsor.id);
