@@ -358,24 +358,24 @@ module.exports = {
             .setFooter(`# of Winners: ${winners}`)
             .setTimestamp()
 
-        const msg = await interaction.reply({embeds : [giveawayEmbed], fetchReply: true});
-        await msg.react(`🎉`)
+        interaction.reply({content: "Giveaway started.", ephemeral: true});
 
         const time = [year, month-1, day, hour, minute]
 
-        // const giveawayChannel = client.channels.cache.get("468170551135961108")
-
         if (location === "verified") {
+
+            const msg = await giveawaysVerifiedChannelId.send({embeds : [giveawayEmbed], fetchReply: true});
+            await msg.react(`🎉`)
+
             await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
-            // await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawayChannel, description, sponsor.id);
             await giveawayFunctions.startSchedule(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
-            // await giveawayFunctions.startSchedule(msg.id, winners, time, giveawayChannel, description, sponsor.id);
         }
         else {
+            const msg = await giveawaysChannelId.send({embeds : [giveawayEmbed], fetchReply: true});
+            await msg.react(`🎉`)
+
             await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysChannelId, description, sponsor.id);
-            // await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawayChannel, description, sponsor.id);
             await giveawayFunctions.startSchedule(msg.id, winners, time, giveawaysChannelId, description, sponsor.id);
-            // await giveawayFunctions.startSchedule(msg.id, winners, time, giveawayChannel, description, sponsor.id);
         }
     },
 };
