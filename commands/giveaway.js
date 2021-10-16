@@ -305,9 +305,6 @@ module.exports = {
             sponsor = interaction.user;
         }
 
-        console.log(day)
-        console.log(new Date().getDate())
-
         if (winners < 1)
             return interaction.reply({
                 content: "Incorrect number of winners.",
