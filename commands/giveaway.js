@@ -447,7 +447,7 @@ module.exports = {
                     }
 
                     usersWhoWon.map(user => winnersMsg += `${user}, `)
-                    interaction.reply({content: `${winnersMsg} congratulations on being the new winners.`});
+                    interaction.reply({content: `${winnersMsg} congratulations on being the new winner(s).`});
                 })
             });
 
