@@ -12,8 +12,7 @@ module.exports = {
      *
      * @param message
      */
-    execute(message) {
-        if (message.partial) message.fetch();
+    async execute(message) {
         pollFunctions.deletePoll(message);
     },
 };
