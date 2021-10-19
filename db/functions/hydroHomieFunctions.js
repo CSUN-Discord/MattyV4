@@ -96,7 +96,12 @@ module.exports = {
                     data[i].timer[0] * 3600000 + data[i].timer[1] * 60000 || 0;
                   if (timer > 299999) {
                     const interval = setInterval(() => {
-                      user.send("Here is your water reminder.");
+                      try {
+                        if (user != null)
+                          user.send("Here is your water reminder.");
+                      }catch (e) {
+                        console.log(e)
+                      }
                     }, timer);
                     reminders.set(user, interval);
                   }

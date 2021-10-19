@@ -236,8 +236,13 @@ module.exports = {
             } else {
               if (data.length > 0) {
                 for (let i = 0; i < data.length; i++) {
-                  const member = guild.members.cache.get(data[i].userId);
-                  member.roles.add(birthdayRole);
+                  try {
+                    const member = guild.members.cache.get(data[i].userId);
+                    if (member != null)
+                      member.roles.add(birthdayRole);
+                  }catch (e) {
+                    console.log(e)
+                  }
                 }
               }
             }
@@ -279,16 +284,19 @@ function printBirthday(fullArray, month, interaction) {
           .setColor("RANDOM");
         counter = 0;
       }
-
-      birthdayEmbed.addField(
-        `\u200b`,
-        `User: ${interaction.guild.members.cache.get(
-          birthdays[i].userId
-        )} (${interaction.guild.members.cache.get(
-            birthdays[i].userId).user.tag
-        }): ${ordinalSuffix(birthdays[i].day)}`
-      );
-      counter += 1;
+      try {
+        birthdayEmbed.addField(
+            `\u200b`,
+            `User: ${interaction.guild.members.cache.get(
+                birthdays[i].userId
+            )} (${interaction.guild.members.cache.get(
+                birthdays[i].userId).user.tag
+            }): ${ordinalSuffix(birthdays[i].day)}`
+        );
+        counter += 1;
+      }catch (e) {
+        console.log(e)
+      }
     }
     interaction.followUp({ embeds: [birthdayEmbed] }).then((r) => {});
   }
