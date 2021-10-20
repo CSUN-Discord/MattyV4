@@ -168,8 +168,10 @@ module.exports = {
 
             // let normalSong = false;
             playlistSong = await queue.playlist(songName, {requestedBy: interaction.user}).catch(async playlistResponse => {
+                console.log(playlistResponse)
                 // normalSong = true;
                 song = await queue.play(songName, {requestedBy: interaction.user}).catch(songResponse => {
+                    console.log(songResponse)
                     return interaction.followUp({content: "There was a problem playing this track."})
                 });
             });
