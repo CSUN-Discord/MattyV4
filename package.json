@@ -47,6 +47,7 @@
     "name-to-imdb": "^3.0.2",
     "node-schedule": "^2.0.0",
     "one-liner-joke": "^1.2.2",
+    "opusscript": "^0.0.8",
     "prettier": "^2.4.1",
     "snekfetch": "^4.0.4",
     "spotify-url-info": "^2.2.3",
