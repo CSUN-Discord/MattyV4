@@ -9,7 +9,7 @@ const dbObjects = require("./db/dbObjects");
 const client = new Client({ intents: 32767, partials: ['MESSAGE', 'REACTION', 'USER'] });
 exports.client = client;
 
-const { Player } = require("discord-music-player");
+const { Player } = require("./modified-packages/discord-music-player");
 
 const player = new Player(client, {
   leaveOnEnd: false,
