@@ -179,6 +179,7 @@ module.exports = {
                 .setTimestamp()
 
             if (song != null) {
+                console.log(song)
                 try {
                     addedEmbed
                         .setTitle(`${song.name} was added to the queue.`)
