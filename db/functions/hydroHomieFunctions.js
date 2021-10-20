@@ -95,12 +95,14 @@ module.exports = {
                   const timer =
                     data[i].timer[0] * 3600000 + data[i].timer[1] * 60000 || 0;
                   if (timer > 299999) {
-                    const interval = setInterval(() => {
-                      try {
-                        if (user != null)
-                          user.send("Here is your water reminder.");
-                      }catch (e) {
-                        console.log(e)
+                    const interval = setInterval(async () => {
+                      if (user != null && user.id != null) {
+                        // console.log(user)
+                        try {
+                          await user.send("Here is your water reminder.");
+                        } catch (e) {
+                          // console.log(e)
+                        }
                       }
                     }, timer);
                     reminders.set(user, interval);

@@ -7,6 +7,8 @@ const { MessageEmbed } = require("discord.js");
 const { suggestionsChannelId } = require("../validation/channels.json");
 const pollFunctions = require("../db/functions/pollFunctions");
 
+const blacklist = ["204827066695286788"]
+
 module.exports = {
   ...new SlashCommandBuilder()
     .setName("suggestion")
@@ -26,6 +28,7 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
+    if (blacklist.includes(interaction.user.id)) return;
     const string = interaction.options.getString("suggestion");
 
     const responseEmbed = new MessageEmbed()

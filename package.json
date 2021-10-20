@@ -1,6 +1,6 @@
 {
   "name": "mattyv4",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Version 4 of Matty",
   "main": "index.js",
   "scripts": {
@@ -24,13 +24,17 @@
   "homepage": "https://github.com/CSUN-Discord/MattyV4#readme",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
+    "@discordjs/opus": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/voice": "^0.6.0",
     "aki-api": "^6.0.8",
     "ascii-table": "^0.0.9",
     "axios": "^0.22.0",
+    "axios-retry": "^3.2.2",
     "connect-four": "^0.0.6",
     "crypto-price": "^0.0.6",
     "discord-api-types": "^0.23.1",
+    "discord-ytdl-core": "^5.0.4",
     "discord.js": "^13.1.0",
     "glob": "^7.2.0",
     "imdb": "^1.1.0",
@@ -40,9 +44,32 @@
     "one-liner-joke": "^1.2.2",
     "prettier": "^2.4.1",
     "snekfetch": "^4.0.4",
-    "yahoo-finance": "^0.3.7"
+    "spotify-url-info": "^2.2.3",
+    "yahoo-finance": "^0.3.7",
+    "youtubei": "^0.0.1-rc.27",
+    "ytdl-core": "^4.9.1",
+    "ytsr": "^3.5.3",
+    "domhandler": "^4.2.2",
+    "ffmpeg-static": "^4.4.0",
+    "htmlparser2": "^7.1.2",
+    "libsodium-wrappers": "^0.7.9"
   },
   "devDependencies": {
-    "easy-discord-chatbot": "^0.0.4"
+    "easy-discord-chatbot": "^0.0.4",
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/node": "^16.6.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "assert-diff": "^3.0.2",
+    "discord.js": "^13.1.0",
+    "discord.js-docgen": "github:discordjs/docgen#ts-patch",
+    "eslint": "^7.32.0",
+    "jest": "^27.0.6",
+    "jsdoc-babel": "^0.5.0",
+    "ts-node": "^10.2.0",
+    "typescript": "^4.3.5"
   }
 }

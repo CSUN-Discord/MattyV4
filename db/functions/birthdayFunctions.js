@@ -230,7 +230,7 @@ module.exports = {
       try {
         birthdaySchema.find(
           { month: today.getMonth() + 1, day: today.getDate() },
-          (err, data) => {
+          async (err, data) => {
             if (err) {
               console.log(err);
             } else {
@@ -239,8 +239,11 @@ module.exports = {
                   try {
                     const member = guild.members.cache.get(data[i].userId);
                     if (member != null)
-                      member.roles.add(birthdayRole);
-                  }catch (e) {
+                      try {
+                        await member.roles.add(birthdayRole);
+                      } catch(e) {
+                      }
+                  } catch (e) {
                     console.log(e)
                   }
                 }

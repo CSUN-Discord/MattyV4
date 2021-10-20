@@ -9,10 +9,20 @@ const dbObjects = require("./db/dbObjects");
 const client = new Client({ intents: 32767, partials: ['MESSAGE', 'REACTION', 'USER'] });
 exports.client = client;
 
+const { Player } = require("./modified-packages/discord-music-player");
+
+const player = new Player(client, {
+  leaveOnEnd: false,
+  leaveOnStop: false,
+  leaveOnEmpty: true,
+  deafenOnJoin: true
+});
+
+// You can define the Player as *client.player* to easily access it.
+client.player = player;
+
 //create a collection to store all the commands
 client.commands = new Collection();
-
-
 
 //get the events handler
 require("./handlers/events")(client);
