@@ -19,17 +19,16 @@ module.exports = {
      */
     async execute(interaction) {
 
-        const embed = new MessageEmbed()
-            .setColor("RANDOM")
-            .setTitle("test")
+        interaction.deferReply()
 
+        let queue = interaction.client.player.getQueue(interaction.guild.id);
 
-        const message = await interaction.reply({ embeds: [embed], fetchReply: true })
-            await message.react("1️⃣")
-            await message.react("2️⃣")
+        await queue.join(interaction.member.voice.channel);
 
+        song = await queue.play("rap god", {requestedBy: interaction.user}).catch(songResponse => {
+            console.log(songResponse)
 
-        await pollFunctions.addPoll(message.id);
+        });
     },
 
 };
