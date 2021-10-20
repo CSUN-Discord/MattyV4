@@ -34,6 +34,7 @@
     "connect-four": "^0.0.6",
     "crypto-price": "^0.0.6",
     "discord-api-types": "^0.23.1",
+    "discord-music-player": "^8.2.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^13.1.0",
     "domhandler": "^4.2.2",
