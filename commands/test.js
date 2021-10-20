@@ -21,7 +21,7 @@ module.exports = {
 
         interaction.deferReply()
 
-        let queue = interaction.client.player.getQueue(interaction.guild.id);
+        let queue = interaction.client.player.createQueue(interaction.guild.id);
 
         await queue.join(interaction.member.voice.channel);
 
