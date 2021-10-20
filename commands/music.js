@@ -193,6 +193,7 @@ module.exports = {
                         )
                     return interaction.followUp({embeds: [addedEmbed]})
                 } catch (e) {
+                    console.log(e)
                     return interaction.followUp({content: "There was a problem adding to the queue."})
                 }
             }
@@ -209,10 +210,12 @@ module.exports = {
                         )
                     return interaction.followUp({embeds: [addedEmbed]})
                 } catch (e) {
+                    console.log(e)
                     return interaction.followUp({content: "There was a problem adding to the queue."})
                 }
             }
             else {
+                console.log("Not song or playlist")
                 return interaction.followUp({content: "There was a problem adding to the queue."})
             }
         } else if (interaction.options.getSubcommand() === "queue") {
