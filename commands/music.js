@@ -11,7 +11,7 @@ module.exports = {
     options: [
         {
             name: "play",
-            description: "Song/Playlist name or link.",
+            description: "Supports Youtube, Spotify, and Apple.",
             type: "SUB_COMMAND",
             options: [
                 {
