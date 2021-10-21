@@ -30,7 +30,7 @@ module.exports = {
      */
     async execute(interaction) {
 
-        const filter = interaction.options.getString("filter");
+        const filter = interaction.options.getString("filter").toLowerCase();
         const message = interaction.options.getString("message");
 
         const guild = interaction.client.guilds.cache.get(guildId);
