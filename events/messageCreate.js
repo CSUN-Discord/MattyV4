@@ -10,6 +10,7 @@ const {
   mattyChannelId,
   roommateChannelId,
   welcomeChannelId,
+    ventChannelId,
 } = require("../validation/channels.json");
 module.exports = {
   name: "messageCreate",
@@ -60,5 +61,15 @@ module.exports = {
         })
         .catch();
     }
+
+      if (
+          message.channel.id === ventChannelId &&
+          !message.author.bot &&
+          !message.member.roles.cache.some((role) => role.name === "Admin") &&
+          !message.member.roles.cache.some((role) => role.name === "Mod") &&
+          !message.member.roles.cache.some((role) => role.name === "Helpers")
+      ) {
+          message.delete();
+      }
   },
 };
