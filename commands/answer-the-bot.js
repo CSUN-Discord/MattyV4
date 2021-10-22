@@ -182,10 +182,6 @@ module.exports = {
                     components: [],
                   });
                   if (inp.customId === "addUser") {
-                    inp.reply({
-                      content: "User updated.",
-                      ephemeral: true,
-                    });
 
                     input.member.roles.add(
                       input.guild.roles.cache.find(
@@ -207,9 +203,20 @@ module.exports = {
                           (role) => role.name === housing
                         )
                       );
-                    input.member.setNickname(
-                      `${input.user.username} - ${major}`
-                    );
+                    if ((`${input.user.username} - ${major}`).length > 32)
+                      inp.reply({
+                        content: "User updated except for name it was too long. MANUALLY FIX IT!",
+                        ephemeral: true,
+                      });
+                    else {
+                      input.member.setNickname(
+                          `${input.user.username} - ${major}`
+                      );
+                      inp.reply({
+                        content: "User updated.",
+                        ephemeral: true,
+                      });
+                    }
                   }
                 } catch (e) {
                   console.log(e);
