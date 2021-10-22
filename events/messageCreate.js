@@ -21,10 +21,10 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(message) {
-    if (message.channel.id === mattyChannelId && !message.author.bot) {
-      let reply = await chat.chat(message.content);
-      await message.reply(reply);
-    }
+    // if (message.channel.id === mattyChannelId && !message.author.bot) {
+    //   let reply = await chat.chat(message.content);
+    //   await message.reply(reply);
+    // }
 
     if (message.channel.id === marketplaceChannelId && !message.author.bot) {
       message
