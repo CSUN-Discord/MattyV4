@@ -90,7 +90,7 @@ module.exports = {
         if (stringUsers.length < 1)
             stringUsers = "No users to ping."
         else
-            stringUsers += `, ${interaction.user.tag} needs your attention.\n${message}\n`;
+            stringUsers += `, ${interaction.user.tag} needs your attention.\n`;
 
         const [first, ...rest] = Util.splitMessage(stringUsers, { char: " ",});
 
@@ -104,6 +104,8 @@ module.exports = {
                     });
                 }
             }
+
+            interaction.followUp({content: `\n${message}`})
         });
     },
 };

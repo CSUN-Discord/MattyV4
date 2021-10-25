@@ -150,7 +150,9 @@ module.exports = {
         interaction.deferReply({fetchReply: true})
         const songName = interaction.options.getString("name");
         const mode = interaction.options.getString("mode");
-        const volume = interaction.options.getNumber("volume");
+        let volume = interaction.options.getNumber("volume");
+        if (volume > 100) volume = 100;
+        if (volume < 0) volume = 0;
         // const seek = interaction.options.getNumber("time");
         const queuePosition = interaction.options.getNumber("queue-position");
         let queue = interaction.client.player.getQueue(interaction.guild.id);
@@ -221,7 +223,8 @@ module.exports = {
                 console.log("Not song or playlist")
                 return interaction.followUp({content: "There was a problem adding to the queue."})
             }
-        } else if (interaction.options.getSubcommand() === "queue") {
+        }
+        else if (interaction.options.getSubcommand() === "queue") {
             if (queue == null)
                 return interaction.followUp({content: "There is no queue."})
 
@@ -318,12 +321,14 @@ module.exports = {
                 return interaction.followUp({content: `No song to skip.`})
             else
                 return interaction.followUp({content: `${song.name} is skipped.`})
-        } else if (interaction.options.getSubcommand() === "clear") {
+        }
+        else if (interaction.options.getSubcommand() === "clear") {
             if (queue == null || queue.songs.length < 1)
                 return interaction.followUp({content: "Nothing to clear."})
             queue.clearQueue();
             return interaction.followUp({content: `The queue is cleared.`})
-        }  else if (interaction.options.getSubcommand() === "loop") {
+        }
+        else if (interaction.options.getSubcommand() === "loop") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             if (!queue.isPlaying)
@@ -339,7 +344,8 @@ module.exports = {
                     queue.setRepeatMode(0)
                     return interaction.followUp({content: "Loop is turned off."})
             }
-        } else if (interaction.options.getSubcommand() === "lyrics") {
+        }
+        else if (interaction.options.getSubcommand() === "lyrics") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             if (!queue.isPlaying)
@@ -384,26 +390,30 @@ module.exports = {
                 await interaction.followUp({ content: "Song lyrics not found." });
                 console.log(e);
             }
-        } else if (interaction.options.getSubcommand() === "pause") {
+        }
+        else if (interaction.options.getSubcommand() === "pause") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             if (!queue.isPlaying)
                 return interaction.followUp({content: "Nothing is playing right now."})
             queue.setPaused(true);
             return interaction.followUp({content: `${queue.nowPlaying.name} is paused.`})
-        } else if (interaction.options.getSubcommand() === "unpause") {
+        }
+        else if (interaction.options.getSubcommand() === "unpause") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             if (!queue.isPlaying)
                 return interaction.followUp({content: "Nothing is in queue right now."})
             queue.setPaused(false);
             return interaction.followUp({content: `${queue.nowPlaying.name} is resumed.`})
-        } else if (interaction.options.getSubcommand() === "shuffle") {
+        }
+        else if (interaction.options.getSubcommand() === "shuffle") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             queue.shuffle();
             return interaction.followUp({content: "Queue is shuffled."})
-        } else if (interaction.options.getSubcommand() === "np") {
+        }
+        else if (interaction.options.getSubcommand() === "np") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             if (!queue.isPlaying)
@@ -423,17 +433,20 @@ module.exports = {
                 nowPlayingEmbed.setDescription(`▶ Requested By: ${queue.nowPlaying.requestedBy} (${queue.nowPlaying.requestedBy.tag}) \n${ProgressBar.prettier}`)
 
             return interaction.followUp({embeds: [nowPlayingEmbed]})
-        } else if (interaction.options.getSubcommand() === "set-volume") {
+        }
+        else if (interaction.options.getSubcommand() === "set-volume") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             queue.setVolume(volume);
             return interaction.followUp({content: "Volume has been changed."})
-        } else if (interaction.options.getSubcommand() === "stop") {
+        }
+        else if (interaction.options.getSubcommand() === "stop") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing is playing right now."})
             queue.stop();
             return interaction.followUp({content: "Player has stopped."})
-        } else if (interaction.options.getSubcommand() === "remove") {
+        }
+        else if (interaction.options.getSubcommand() === "remove") {
             if (queue == null)
                 return interaction.followUp({content: "Nothing in queue."})
             if (queue.songs.length < 1)
