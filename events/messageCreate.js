@@ -2,12 +2,8 @@
 event that listens for message creation
  */
 
-const Chat = require("easy-discord-chatbot");
-const chat = new Chat({ name: "Matty" });
-
 const {
   marketplaceChannelId,
-  mattyChannelId,
   roommateChannelId,
   welcomeChannelId,
     ventChannelId,
@@ -21,10 +17,6 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(message) {
-    // if (message.channel.id === mattyChannelId && !message.author.bot) {
-    //   let reply = await chat.chat(message.content);
-    //   await message.reply(reply);
-    // }
 
     if (message.channel.id === marketplaceChannelId && !message.author.bot) {
       message

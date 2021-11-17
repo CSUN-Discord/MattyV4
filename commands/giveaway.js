@@ -2,9 +2,9 @@
 This command will allow you to start a giveaway
 */
 
-const {MessageEmbed} = require("discord.js");
-const giveawayFunctions = require("../db/functions/giveawayFunctions");
-const { giveawaysChannelId, giveawaysVerifiedChannelId } = require("../validation/channels.json");
+const {CommandInteraction, MessageEmbed} = require("discord.js");
+const {client} = require("../index")
+const ms = require("ms");
 
 module.exports = {
     name: "giveaway",
@@ -15,22 +15,17 @@ module.exports = {
             name: "start",
             description: "Start a giveaway.",
             type: "SUB_COMMAND",
-            required: false,
             options: [
                 {
-                    name: "location",
-                    description: "Choose if this is a verified or normal giveaway.",
+                    name: "channel",
+                    description: "Select a channel for the giveaway.",
+                    type: "CHANNEL",
+                    required: true,
+                },
+                {
+                    name: "duration",
+                    description: "Provide a duration for this giveaway (1m, 1h, 1d)",
                     type: "STRING",
-                    choices: [
-                        {
-                            name: "verified",
-                            value: "verified",
-                        },
-                        {
-                            name: "normal",
-                            value: "normal",
-                        },
-                    ],
                     required: true,
                 },
                 {
@@ -42,245 +37,7 @@ module.exports = {
                 {
                     name: "winners",
                     description: "How many winners for this giveaway?",
-                    type: "NUMBER",
-                    required: true,
-                },
-                {
-                    name: "day",
-                    description: "Day this giveaway ends.",
-                    type: "NUMBER",
-                    required: true,
-                },
-                {
-                    name: "month",
-                    description: "Month this giveaway ends.",
-                    type: "NUMBER",
-                    required: true,
-                    choices: [
-                        {
-                            name: "January",
-                            value: 1,
-                        },
-                        {
-                            name: "February",
-                            value: 2,
-                        },
-                        {
-                            name: "March",
-                            value: 3,
-                        },
-                        {
-                            name: "April",
-                            value: 4,
-                        },
-                        {
-                            name: "May",
-                            value: 5,
-                        },
-                        {
-                            name: "June",
-                            value: 6,
-                        },
-                        {
-                            name: "July",
-                            value: 7,
-                        },
-                        {
-                            name: "August",
-                            value: 8,
-                        },
-                        {
-                            name: "September",
-                            value: 9,
-                        },
-                        {
-                            name: "October",
-                            value: 10,
-                        },
-                        {
-                            name: "November",
-                            value: 11,
-                        },
-                        {
-                            name: "December",
-                            value: 12,
-                        },
-                    ],
-                },
-                {
-                    name: "year",
-                    description: "Year this giveaway ends.",
-                    type: "NUMBER",
-                    required: true,
-                    choices: [
-                        {
-                            name: new Date().getFullYear(),
-                            value: new Date().getFullYear(),
-                        },
-                        {
-                            name: new Date().getFullYear()+1,
-                            value: new Date().getFullYear()+1,
-                        },
-                    ],
-                },
-                {
-                    name: "hour",
-                    description: "Hour this giveaway ends.",
-                    type: "NUMBER",
-                    required: true,
-                    choices: [
-                        {
-                            name: "12am",
-                            value: 0,
-                        },
-                        {
-                            name: "1am",
-                            value: 1,
-                        },
-                        {
-                            name: "2am",
-                            value: 2,
-                        },
-                        {
-                            name: "3am",
-                            value: 3,
-                        },
-                        {
-                            name: "4am",
-                            value: 4,
-                        },
-                        {
-                            name: "5am",
-                            value: 5,
-                        },
-                        {
-                            name: "6am",
-                            value: 6,
-                        },
-                        {
-                            name: "7am",
-                            value: 7,
-                        },
-                        {
-                            name: "8am",
-                            value: 8,
-                        },
-                        {
-                            name: "9am",
-                            value: 9,
-                        },
-                        {
-                            name: "10am",
-                            value: 10,
-                        },
-                        {
-                            name: "11am",
-                            value: 11,
-                        },
-                        {
-                            name: "12pm",
-                            value: 12,
-                        },
-                        {
-                            name: "1pm",
-                            value: 13,
-                        },
-                        {
-                            name: "2pm",
-                            value: 14,
-                        },
-                        {
-                            name: "3pm",
-                            value: 15,
-                        },
-                        {
-                            name: "4pm",
-                            value: 16,
-                        },
-                        {
-                            name: "5pm",
-                            value: 17,
-                        },
-                        {
-                            name: "6pm",
-                            value: 18,
-                        },
-                        {
-                            name: "7pm",
-                            value: 19,
-                        },
-                        {
-                            name: "8pm",
-                            value: 20,
-                        },
-                        {
-                            name: "9pm",
-                            value: 21,
-                        },
-                        {
-                            name: "10pm",
-                            value: 22,
-                        },
-                        {
-                            name: "11pm",
-                            value: 23,
-                        },
-                    ],
-                },
-                {
-                    name: "minute",
-                    description: "Minute this giveaway ends.",
-                    type: "NUMBER",
-                    choices: [
-                        {
-                            name: "00",
-                            value: 0,
-                        },
-                        {
-                            name: "05",
-                            value: 5,
-                        },
-                        {
-                            name: "10",
-                            value: 10,
-                        },
-                        {
-                            name: "15",
-                            value: 15,
-                        },
-                        {
-                            name: "20",
-                            value: 20,
-                        },
-                        {
-                            name: "25",
-                            value: 25,
-                        },
-                        {
-                            name: "30",
-                            value: 30,
-                        },
-                        {
-                            name: "35",
-                            value: 35,
-                        },
-                        {
-                            name: "40",
-                            value: 40,
-                        },
-                        {
-                            name: "45",
-                            value: 45,
-                        },
-                        {
-                            name: "50",
-                            value: 50,
-                        },
-                        {
-                            name: "55",
-                            value: 55,
-                        },
-                    ],
+                    type: "INTEGER",
                     required: true,
                 },
                 {
@@ -289,171 +46,161 @@ module.exports = {
                     type: "USER",
                     required: false,
                 },
-            ]
+            ],
         },
         {
-            name: "re-roll",
-            description: "Re-roll users for a giveaway that has ended.",
+            name: "actions",
+            description: "Options for giveaways",
             type: "SUB_COMMAND",
-            required: false,
             options: [
                 {
-                    name: "channel-id",
-                    description: "The channel id this giveaway is in.",
+                    name: "options",
+                    description: "Select an option.",
                     type: "STRING",
-                    required: true
+                    required: true,
+                    choices: [
+                        {
+                            name: "end",
+                            value: "end",
+                        },
+                        {
+                            name: "pause",
+                            value: "pause",
+                        },
+                        {
+                            name: "unpause",
+                            value: "unpause",
+                        },
+                        {
+                            name: "re-roll",
+                            value: "re-roll",
+                        },
+                        {
+                            name: "delete",
+                            value: "delete",
+                        },
+                    ],
                 },
                 {
                     name: "msg-id",
                     description: "The message id for this giveaway.",
                     type: "STRING",
-                    required: true
+                    required: true,
                 },
-                {
-                    name: "users",
-                    description: "The number of users to re-roll.",
-                    type: "NUMBER",
-                    required: true
-                }
-            ]
-        }
+            ],
+        },
     ],
 
     /**
      *
-     * @param interaction
+     * @param {CommandInteraction} interaction
      * @returns {Promise<void>}
      */
+
     async execute(interaction) {
-        const location = interaction.options.getString("location");
-        const description = interaction.options.getString("description");
-        let sponsor = interaction.options.getUser("sponsor");
-        const winners = interaction.options.getNumber("winners");
-        const day = interaction.options.getNumber("day");
-        const month = interaction.options.getNumber("month");
-        const year = interaction.options.getNumber("year");
-        const hour = interaction.options.getNumber("hour");
-        const minute = interaction.options.getNumber("minute");
+        const {options} = interaction;
 
-        const channelId = interaction.options.getString("channel-id");
-        const messageId = interaction.options.getString("msg-id");
-        const users = interaction.options.getNumber("users");
+        const Sub = options.getSubcommand();
 
-        if (interaction.options.getSubcommand() === "start") {
+        const errorEmbed = new MessageEmbed()
+            .setColor("RED")
 
-            if (sponsor == null) {
-                sponsor = interaction.user;
-            }
+        const successEmbed = new MessageEmbed()
+            .setColor("GREEN")
 
-            if (winners < 1)
-                return interaction.reply({
-                    content: "Incorrect number of winners.",
-                    ephemeral: true,
-                });
+        switch (Sub) {
+            case "start":
 
-            if (day > 31 || day < 1)
-                return interaction.reply({
-                    content: "Incorrect day.",
-                    ephemeral: true,
-                });
+                const channel = options.getChannel("channel");
+                const duration = options.getString("duration");
+                const winnerCount = options.getInteger("winners");
+                const prize = options.getString("description");
+                const sponsor = options.getUser("sponsor") || interaction.user;
 
-            if (year === new Date().getFullYear()) {
-                if (month < new Date().getMonth()+1) {
-                    return interaction.reply({
-                        content: "Incorrect month.",
-                        ephemeral: true,
-                    });
-                }
-                if (month === new Date().getMonth()+1) {
-                    if (day < new Date().getDate()) {
-                        return interaction.reply({
-                            content: "Incorrect day.",
-                            ephemeral: true,
-                        });
+                client.giveawaysManager.start(channel, {
+                    duration: ms(duration),
+                    winnerCount: winnerCount,
+                    prize: prize,
+                    hostedBy: sponsor,
+                    lastChance: {
+                        enabled: true,
+                        threshold: 30000
                     }
-                }
-            }
-
-            let timeFormat = "";
-            let minuteFormat = "";
-            if (minute < 10) {
-                minuteFormat = `0${minute}`
-            }
-            else {
-                minuteFormat = `${minute}`
-            }
-            if (hour > 12) {
-                timeFormat = `${hour-12}:${minuteFormat}pm`
-            }
-            else {
-                timeFormat = `${hour}:${minuteFormat}am`
-            }
-
-            const giveawayEmbed = new MessageEmbed()
-                .setTitle("Giveaway Time!")
-                .setDescription(`${description}\n\n**Ending: ${month}/${day}/${year} ${timeFormat}**`)
-                .setAuthor(`Sponsor: ${sponsor.tag}`)
-                .setFooter(`# of Winners: ${winners}`)
-                .setTimestamp()
-
-            interaction.reply({content: "Giveaway started.", ephemeral: true});
-
-            const time = [year, month-1, day, hour, minute]
-
-            if (location === "verified") {
-                const giveawayChannel = interaction.client.channels.cache.get(giveawaysVerifiedChannelId)
-                const msg = await giveawayChannel.send({embeds : [giveawayEmbed], fetchReply: true});
-                await msg.react(`🎉`)
-
-                await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
-                await giveawayFunctions.startSchedule(msg.id, winners, time, giveawaysVerifiedChannelId, description, sponsor.id);
-            }
-            else {
-                const giveawayChannel = interaction.client.channels.cache.get(giveawaysChannelId)
-                const msg = await giveawayChannel.send({embeds : [giveawayEmbed], fetchReply: true});
-                await msg.react(`🎉`)
-
-                await giveawayFunctions.addGiveaway(msg.id, winners, time, giveawaysChannelId, description, sponsor.id);
-                await giveawayFunctions.startSchedule(msg.id, winners, time, giveawaysChannelId, description, sponsor.id);
-            }
-        } else if (interaction.options.getSubcommand() === "re-roll") {
-            const giveawayChannel = interaction.client.channels.cache.get(channelId)
-
-            let winnersMsg = '';
-
-            giveawayChannel.messages.fetch(messageId).then(async reactionMessage => {
-                reactionMessage.reactions.cache.map(async (reaction) => {
-                    const usersThatReacted = [];
-                    let usersWhoWon = [];
-
-                    if (reaction.emoji.name !== "🎉") return;
-                    const reactedUsers = await reaction.users.fetch();
-                    reactedUsers.map((user) => {
-                        if (user.bot) {
-                            return;
-                        }
-                        usersThatReacted.push(user);
-                    });
-
-                    if (usersThatReacted.length >= users) {
-                        for (let i = 0; i < users; i++) {
-                            const user = usersThatReacted.splice(Math.floor((Math.random() * usersThatReacted.length)), 1);
-                            usersWhoWon.push(user)
-                        }
-                    } else {
-                        for (let i = 0; i < usersThatReacted.length; i++) {
-                            usersWhoWon.push(usersThatReacted[i])
-                        }
-                    }
-
-                    usersWhoWon.map(user => winnersMsg += `${user}, `)
-                    interaction.reply({content: `${winnersMsg} congratulations on being the new winner(s).`});
+                }).then(async () => {
+                    successEmbed.setDescription("Giveaway was successfully started.")
+                    return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                }).catch((err) => {
+                    console.log(err)
+                    errorEmbed.setDescription(`An error has occurred. ${err}`)
+                    return interaction.reply({embeds: [errorEmbed], ephemeral: true})
                 })
-            });
+                break;
 
-        } else {
-            interaction.reply({content: "Command not found.", ephemeral: true});
+            case "actions":
+                const choice = options.getString("options");
+                const messageId = options.getString("msg-id")
+                const giveaway = client.giveawaysManager.giveaways.find((g) => g.guildId === interaction.guildId && g.messageId === messageId);
+
+                if (!giveaway) {
+                    errorEmbed.setDescription(`Unable to find the giveaway with the message id: ${messageId} in this guild.`)
+                    return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                }
+
+                switch (choice) {
+                    case "end":
+                        client.giveawaysManager.end(messageId).then(() => {
+                            successEmbed.setDescription("Giveaway has been ended.")
+                            return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                        }).catch((err) => {
+                            errorEmbed.setDescription(`An error has occurred. ${err}`)
+                            return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                        });
+                        break;
+                    case "pause":
+                        client.giveawaysManager.pause(messageId).then(() => {
+                            successEmbed.setDescription("Giveaway has been paused.")
+                            return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                        }).catch((err) => {
+                            errorEmbed.setDescription(`An error has occurred. ${err}`)
+                            return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                        });
+                        break;
+                    case "unpause":
+                        client.giveawaysManager.unpause(messageId).then(() => {
+                            successEmbed.setDescription("Giveaway has been un-paused.")
+                            return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                        }).catch((err) => {
+                            errorEmbed.setDescription(`An error has occurred. ${err}`)
+                            return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                        });
+                        break;
+                    case "re-roll":
+                        client.giveawaysManager.reroll(messageId).then(() => {
+                            successEmbed.setDescription("User has been rerolled.")
+                            return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                        }).catch((err) => {
+                            errorEmbed.setDescription(`An error has occurred. ${err}`)
+                            return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                        });
+                        break;
+                    case "delete":
+                        client.giveawaysManager.delete(messageId).then(() => {
+                            successEmbed.setDescription("Giveaway has been deleted.")
+                            return interaction.reply({embeds: [successEmbed], ephemeral: true})
+                        }).catch((err) => {
+                            errorEmbed.setDescription(`An error has occurred. ${err}`)
+                            return interaction.reply({embeds: [errorEmbed], ephemeral: true})
+                        });
+                        break;
+                    default: {
+                        console.log("Error in giveaway command.")
+                    }
+                }
+                break;
+
+            default: {
+                console.log("Error in giveaway command.")
+            }
         }
-
     },
 };

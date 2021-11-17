@@ -7,28 +7,28 @@ let dbObjects = require("../db/dbObjects");
 
 const hydroHomieFunctions = require("../db/functions/hydroHomieFunctions");
 const birthdayFunctions = require("../db/functions/birthdayFunctions");
-const giveawayFunctions = require("../db/functions/giveawayFunctions");
+// const giveawayFunctions = require("../db/functions/giveawayFunctions");
 
 module.exports = {
-  name: "ready",
-  once: true,
-  /**
-   * @param {Client} client
-   */
-  async execute(client) {
-    client.user.setActivity("with discord.js documentation", {
-      type: "PLAYING",
-    });
+    name: "ready",
+    once: true,
+    /**
+     * @param {Client} client
+     */
+    async execute(client) {
+        client.user.setActivity("with discord.js documentation", {
+            type: "PLAYING",
+        });
 
-    await mongo().then(async (mongoose) => {
-      console.log(`Connected to mongoDB.`);
-      dbObjects.mongoo = mongoose;
-    });
+        await mongo().then(async (mongoose) => {
+            console.log(`Connected to mongoDB.`);
+            dbObjects.mongoo = mongoose;
+        });
 
-    hydroHomieFunctions.startReminders(client);
-    birthdayFunctions.birthday(client);
-    giveawayFunctions.loadGiveaways(client);
+        hydroHomieFunctions.startReminders(client);
+        birthdayFunctions.birthday(client);
+        // giveawayFunctions.loadGiveaways(client);
 
-    console.log(`Ready! Logged in as ${client.user.tag}`);
-  },
+        console.log(`Ready! Logged in as ${client.user.tag}`);
+    },
 };
