@@ -2,8 +2,8 @@
 event that happens whenever a thread is created or when the client user is added to a thread
  */
 
-const {auditChannelId} = require("../validation/channels.json");
 const {MessageEmbed} = require("discord.js");
+const channelsFunctions = require("../db/functions/channelsFunctions.js");
 
 module.exports = {
     name: "threadCreate",
@@ -18,7 +18,16 @@ module.exports = {
     async execute(thread) {
         await thread.setLocked(true);
 
+        const channelIds = await channelsFunctions.getChannelId(thread.guild.id);
+        const auditChannelId = channelIds[0].channels.audit || null;
+
+        if (auditChannelId == null)
+            return;
+
         const auditChannel = thread.client.channels.cache.get(auditChannelId);
+
+        if (auditChannel.type !== "GUILD_TEXT")
+            return;
 
         try {
             const user = await thread.client.users.fetch(thread.ownerId);

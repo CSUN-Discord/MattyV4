@@ -537,6 +537,8 @@ module.exports = {
 
                     const filter = options.getString("filter-type");
 
+                    queue.setFilter(false);
+
                     switch (filter) {
                         case "3d":
                             queue.setFilter("3d")
@@ -584,8 +586,7 @@ module.exports = {
                             queue.setFilter("mcompand")
                             break;
                         case "none":
-                            queue.setFilter(false)
-                            break
+                            break;
                     }
 
                     return interaction.editReply({content: `Filter set to ${filter}.`})
@@ -710,6 +711,8 @@ function createQueueEmbed(queue) {
             {name: 'Total Queue Duration', value: `${queue.formattedDuration}`, inline: true},
             {name: 'Repeating', value: `${repeating}`, inline: true},
             {name: `${volume}`, value: `${queue.volume}`, inline: true},
+            {name: `Filters`, value: `${queue.filters.join(", ") || "Off"}`, inline: true},
+            {name: `Autoplay`, value: `${queue.autoplay ? "On" : "Off"}`, inline: true},
         )
         .setTimestamp()
         .setDescription(`${getDescription(queue, startQueue, endQueue)}`);

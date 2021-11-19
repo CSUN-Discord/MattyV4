@@ -2,8 +2,8 @@
 Emitted whenever a message is updated - e.g. embed or content change.
  */
 
-const {auditChannelId} = require("../validation/channels.json");
 const {MessageEmbed} = require("discord.js");
+const channelsFunctions = require("../db/functions/channelsFunctions.js");
 
 module.exports = {
     name: "messageUpdate",
@@ -20,7 +20,17 @@ module.exports = {
         if (oldMessage.partial)
             await oldMessage.fetch();
 
+        const channelIds = await channelsFunctions.getChannelId(newMessage.guild.id);
+        const auditChannelId = channelIds[0].channels.audit || null;
+
+        if (auditChannelId == null)
+            return;
+
         const auditChannel = newMessage.client.channels.cache.get(auditChannelId);
+
+        if (auditChannel.type !== "GUILD_TEXT") {
+            return;
+        }
 
         try {
             if (newMessage.author.bot) return;
@@ -35,27 +45,23 @@ module.exports = {
             try {
                 messageEmbed
                     .addField("Old Message Content", `${oldMessage.content || "N/A"}`);
-            }
-             catch (e) {
+            } catch (e) {
             }
 
             try {
                 messageEmbed
                     .addField("New Message Content", `${newMessage.content || "N/A"}`);
-            }
-            catch (e) {
+            } catch (e) {
             }
             try {
                 messageEmbed
                     .addField("Old Message Image", `${oldMessage.attachments.first().url || "N/A"}`)
-            }
-            catch (e) {
+            } catch (e) {
             }
             try {
                 messageEmbed
                     .addField("New Message Image", `${newMessage.attachments.first().url || "N/A"}`)
-            }
-            catch (e) {
+            } catch (e) {
             }
 
             return auditChannel.send({embeds: [messageEmbed]})

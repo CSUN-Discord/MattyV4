@@ -2,8 +2,8 @@
 This command will create a new thread depending on the item being sold
 */
 
-const { MessageEmbed } = require("discord.js");
-const { marketplaceChannelId } = require("../validation/channels.json");
+const {MessageEmbed} = require("discord.js");
+const channelsFunctions = require("../db/functions/channelsFunctions.js");
 
 module.exports = {
   name: "marketplace",
@@ -70,6 +70,18 @@ module.exports = {
    * @returns {Promise<void>}
    */
   async execute(interaction) {
+
+    const channelIds = await channelsFunctions.getChannelId(interaction.guild.id);
+    const marketplaceChannelId = channelIds[0].channels.marketplace || null;
+
+    if (marketplaceChannelId == null)
+      return;
+
+    const marketplaceChannel = interaction.client.channels.cache.get(marketplaceChannelId);
+
+    if (marketplaceChannel.type !== "GUILD_TEXT")
+      return;
+
     if (interaction.channel.id !== marketplaceChannelId)
       return interaction.reply({
         content: "This command only works in the marketplace channel.",
@@ -82,7 +94,7 @@ module.exports = {
     const pictureLink = interaction.options.getString("picture_link");
 
     const marketPlaceChannel =
-      interaction.client.channels.cache.get(marketplaceChannelId);
+        interaction.client.channels.cache.get(marketplaceChannelId);
 
     const thread = await marketPlaceChannel.threads.create({
       name: title,
@@ -91,20 +103,20 @@ module.exports = {
     });
 
     const listingEmbed = new MessageEmbed()
-      .setColor("GREEN")
-      .setTitle(title)
-      .setDescription(`${interaction.member}'s new listing.`)
-      .addFields(
-        { name: "Description", value: description },
-        { name: "Price", value: `$${price}` },
-        { name: "Condition", value: condition }
-      );
+        .setColor("GREEN")
+        .setTitle(title)
+        .setDescription(`${interaction.member}'s new listing.`)
+        .addFields(
+            {name: "Description", value: description},
+            {name: "Price", value: `$${price}`},
+            {name: "Condition", value: condition}
+        );
     if (pictureLink) listingEmbed.addField("Pictures: ", `${pictureLink}`);
 
     await thread.send(
-      `${interaction.member}, Created a thread for: ${title}. Please use the archive-thread command when this listing is completed.`
+        `${interaction.member}, Created a thread for: ${title}. Please use the archive-thread command when this listing is completed.`
     );
-    await thread.send({ embeds: [listingEmbed] });
+    await thread.send({embeds: [listingEmbed]});
 
     await interaction.reply({
       content: "Submission received.",

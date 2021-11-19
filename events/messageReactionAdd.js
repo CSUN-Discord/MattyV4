@@ -2,9 +2,9 @@
 event that happens when someone adds a reaction to a message
  */
 
-const {roleChangeChannelId} = require("../validation/channels.json");
 const {guildId} = require("../config.json");
 const pollFunctions = require("../db/functions/pollFunctions");
+const channelsFunctions = require("../db/functions/channelsFunctions.js");
 module.exports = {
     name: "messageReactionAdd",
     once: false,
@@ -45,6 +45,12 @@ module.exports = {
         const movie = guild.roles.cache.find(
             (r) => r.id === "726280155190001735"
         );
+
+        const channelIds = await channelsFunctions.getChannelId(reaction.message.guild.id);
+        const roleChangeChannelId = channelIds[0].channels.roleChange || null;
+
+        if (roleChangeChannelId == null)
+            return;
 
         if (reaction.message.channel.id === roleChangeChannelId) {
             if (reaction.emoji.name === `1️⃣`) {
