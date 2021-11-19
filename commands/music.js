@@ -3,11 +3,14 @@ This command will play a song
 */
 
 const axios = require("axios");
-const { MessageEmbed, Util, MessageButton, MessageActionRow, MessageSelectMenu} = require("discord.js");
+const {MessageEmbed, Util, MessageButton, MessageActionRow, MessageSelectMenu} = require("discord.js");
+const {client} = require("../index")
+let startQueue = 0;
+let endQueue = 10;
 
 module.exports = {
     name: "music",
-    description: "Music commands supports, Youtube, Spotify, Apple songs and playlists.",
+    description: "Music commands supports, Youtube and Spotify songs and playlists.",
     options: [
         {
             name: "play",
@@ -15,8 +18,8 @@ module.exports = {
             type: "SUB_COMMAND",
             options: [
                 {
-                    name: "name",
-                    description: "Song/Playlist name or link.",
+                    name: "query",
+                    description: "Song/Playlist name or url.",
                     type: "STRING",
                     required: true,
                 }
@@ -30,11 +33,6 @@ module.exports = {
         {
             name: "skip",
             description: "Skips the current song.",
-            type: "SUB_COMMAND",
-        },
-        {
-            name: "clear",
-            description: "Clears the queue.",
             type: "SUB_COMMAND",
         },
         {
@@ -75,8 +73,8 @@ module.exports = {
             type: "SUB_COMMAND",
         },
         {
-            name: "unpause",
-            description: "Unpauses the queue.",
+            name: "resume",
+            description: "Resumes the queue.",
             type: "SUB_COMMAND",
         },
         {
@@ -97,29 +95,139 @@ module.exports = {
                 {
                     name: "volume",
                     description: "Number from 0-100.",
-                    type: "NUMBER",
+                    type: "INTEGER",
                     required: true
                 }
             ]
         },
         {
-            name: "disconnect",
-            description: "Disconnect the bot from voice.",
+            name: "seek",
+            description: "Seek to a time in the song.",
+            type: "SUB_COMMAND",
+            options: [
+                {
+                    name: "amount",
+                    description: "Seek to number in seconds of the song (70 = 1 min 10 sec).",
+                    required: true,
+                    type: "INTEGER"
+                }
+            ]
+        },
+        {
+            name: "jump",
+            description: "Jump to this track.",
+            type: "SUB_COMMAND",
+            options: [
+                {
+                    name: "index",
+                    description: "Position of the song in the queue.",
+                    required: true,
+                    type: "INTEGER"
+                }
+            ]
+        },
+        {
+            name: "filter",
+            description: "Filter to apply.",
+            type: "SUB_COMMAND",
+            options: [
+                {
+                    name: "filter-type",
+                    description: "The type of filter.",
+                    required: true,
+                    type: "STRING",
+                    choices: [
+                        {
+                            name: "3d",
+                            value: "3d"
+                        },
+                        {
+                            name: "bassboost",
+                            value: "bassboost"
+                        },
+                        {
+                            name: "echo",
+                            value: "echo"
+                        },
+                        {
+                            name: "karaoke",
+                            value: "karaoke"
+                        },
+                        {
+                            name: "nightcore",
+                            value: "nightcore"
+                        },
+                        {
+                            name: "vaporwave",
+                            value: "vaporwave"
+                        },
+                        {
+                            name: "flanger",
+                            value: "flanger"
+                        },
+                        {
+                            name: "gate",
+                            value: "gate"
+                        },
+                        {
+                            name: "haas",
+                            value: "haas"
+                        },
+                        {
+                            name: "reverse",
+                            value: "reverse"
+                        },
+                        {
+                            name: "surround",
+                            value: "surround"
+                        },
+                        {
+                            name: "mcompand",
+                            value: "mcompand"
+                        },
+                        {
+                            name: "phaser",
+                            value: "phaser"
+                        },
+                        {
+                            name: "tremolo",
+                            value: "tremolo"
+                        },
+                        {
+                            name: "earwax",
+                            value: "earwax"
+                        },
+                        {
+                            name: "none",
+                            value: "none"
+                        },
+                    ]
+                }
+            ]
+        },
+        {
+            name: "toggle-autoplay",
+            description: "Autoplay songs after queue finishes.",
+            type: "SUB_COMMAND",
+            options: [
+                {
+                    name: "switch",
+                    description: "Turn on or off autoplay.",
+                    required: true,
+                    type: "STRING",
+                }
+            ]
+        },
+        {
+            name: "add-related-song",
+            description: "Adds a related song to queue.",
             type: "SUB_COMMAND",
         },
-        // {
-        //     name: "seek",
-        //     description: "Seek the current track.",
-        //     type: "SUB_COMMAND",
-        //     options: [
-        //         {
-        //             name: "time",
-        //             description: "Amount to seek.",
-        //             required: true,
-        //             type: "NUMBER"
-        //         }
-        //     ]
-        // },
+        {
+            name: "previous",
+            description: "Play the previous song if exists.",
+            type: "SUB_COMMAND",
+        },
         {
             name: "stop",
             description: "Stop, but don't disconnect the bot.",
@@ -127,14 +235,14 @@ module.exports = {
         },
         {
             name: "remove",
-            description: "Remove tracks from the queue.",
+            description: "Removes track from the queue.",
             type: "SUB_COMMAND",
             options: [
                 {
                     name: "queue-position",
                     description: "Position of the song in the queue.",
                     required: true,
-                    type: "NUMBER"
+                    type: "INTEGER"
                 },
             ]
         },
@@ -147,350 +255,429 @@ module.exports = {
      * @returns {Promise<void>}
      */
     async execute(interaction) {
-        interaction.deferReply({fetchReply: true})
-        const songName = interaction.options.getString("name");
-        const mode = interaction.options.getString("mode");
-        let volume = interaction.options.getNumber("volume");
-        if (volume > 100) volume = 100;
-        if (volume < 0) volume = 0;
-        // const seek = interaction.options.getNumber("time");
-        const queuePosition = interaction.options.getNumber("queue-position");
-        let queue = interaction.client.player.getQueue(interaction.guild.id);
 
-        if (interaction.options.getSubcommand() === "play") {
-            if (queue == null)
-                queue = interaction.client.player.createQueue(interaction.guild.id);
-            try {
-                await queue.join(interaction.member.voice.channel);
-            } catch (e) {
-                return interaction.followUp({content: "Join a voice channel."})
-            }
-            let playlistSong = null;
-            let song = null;
 
-            // let normalSong = false;
-            playlistSong = await queue.playlist(songName, {requestedBy: interaction.user}).catch(async playlistResponse => {
-                console.log(playlistResponse)
-                // normalSong = true;
-                song = await queue.play(songName, {requestedBy: interaction.user}).catch(songResponse => {
-                    console.log(songResponse)
-                    return interaction.followUp({content: "There was a problem playing this track."})
-                });
-            });
+        const {options, member, guild, channel} = interaction
+        const VoiceChannel = member.voice.channel;
 
-            const addedEmbed = new MessageEmbed()
-                .setColor("RANDOM")
-                .setTimestamp()
+        if (!VoiceChannel)
+            return interaction.reply({
+                content: "You must be in a voice channel to be able to use the music commands.",
+                ephemeral: true
+            })
 
-            if (song != null) {
-                console.log(song)
-                try {
-                    addedEmbed
-                        .setTitle(`${song.name} was added to the queue.`)
-                        .setURL(`${song.url}`)
-                        .setAuthor(`${song.author}`)
-                        .setThumbnail(`${song.thumbnail}`)
-                        .setDescription(`${song.requestedBy} (${song.requestedBy.tag})`)
-                        .addFields(
-                            {name: 'Total Entries', value: `${queue.songs.length}`, inline: true},
-                            {name: 'Song Duration', value: `${song.duration}`, inline: true},
-                            {name: 'Total Queue Duration', value: `${getDuration(queue, 0, queue.songs.length)}`, inline: true}
-                        )
-                    return interaction.followUp({embeds: [addedEmbed]})
-                } catch (e) {
-                    console.log(e)
-                    return interaction.followUp({content: "There was a problem adding to the queue."})
-                }
-            }
-            else if (playlistSong != null) {
-                try {
-                    addedEmbed
-                        .setTitle(`${playlistSong.name} was added to the queue.`)
-                        .setURL(`${playlistSong.url}`)
-                        .setDescription(`${playlistSong.songs.length} new songs were added\n${playlistSong.songs[0].requestedBy} (${playlistSong.songs[0].requestedBy.tag})`)
-                        .addFields(
-                            {name: 'Total Entries', value: `${queue.songs.length}`, inline: true},
-                            {name: 'Playlist Duration', value: `${getDuration(playlistSong, 0, playlistSong.songs.length)}`, inline: true},
-                            {name: 'Total Queue Duration', value: `${getDuration(queue, 0, queue.songs.length)}`, inline: true}
-                        )
-                    return interaction.followUp({embeds: [addedEmbed]})
-                } catch (e) {
-                    console.log(e)
-                    return interaction.followUp({content: "There was a problem adding to the queue."})
-                }
-            }
-            else {
-                console.log("Not song or playlist")
-                return interaction.followUp({content: "There was a problem adding to the queue."})
-            }
-        }
-        else if (interaction.options.getSubcommand() === "queue") {
-            if (queue == null)
-                return interaction.followUp({content: "There is no queue."})
+        if (guild.me.voice.channelId && VoiceChannel.id !== guild.me.voice.channelId)
+            return interaction.reply({
+                content: `I'm already playing music in <#${guild.me.voice.channelId}>.`,
+                ephemeral: true
+            })
+        await interaction.deferReply();
+        try {
+            const queue = await client.distube.getQueue(VoiceChannel);
 
-            try {
-                let startQueue = 0;
-                let endQueue = 10;
-
-                const queueMessage = await interaction.followUp({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: createRows(queue)})
-
-                // const userFilter = (input) => input.user.id == interaction.user.id;
-                const collector = interaction.channel
-                    .createMessageComponentCollector({ time: 840000, idle: 30000})
-                    // .createMessageComponentCollector({ filter: userFilter, time: 840000, idle: 30000})
-                collector.on('collect', async input => {
-                    // console.log(input.user.id)
-                    // console.log(interaction.user.id)
-                    try{
-                        if (input.customId === 'first') {
-                            startQueue = 0;
-                            endQueue = startQueue + 10;
-                        } else if (input.customId === 'previous') {
-                            startQueue -= 10;
-
-                            if (startQueue < 0) {
-                                startQueue = 0;
-                                endQueue = startQueue + 10;
-                            } else
-                                endQueue -= 10;
-                        } else if (input.customId === 'next') {
-                            endQueue += 10;
-                            if (endQueue > queue.songs.length) {
-                                endQueue = queue.songs.length;
-                                startQueue = endQueue - 10;
-                            }
-                            else
-                                startQueue += 10;
-                        } else if (input.customId === 'last') {
-                            startQueue = queue.songs.length-10;
-                            endQueue = queue.songs.length;
-                        } else if (input.customId === 'shuffle') {
-                            if (queue != null)
-                                queue.shuffle();
-                        } else if (input.customId === 'play') {
-                            if (queue.isPlaying)
-                                queue.setPaused(false);
-                        } else if (input.customId === 'pause') {
-                            if (queue.isPlaying)
-                                queue.setPaused(true);
-                        } else if (input.customId === 'skip') {
-                            if (queue.isPlaying)
-                                queue.skip();
-                        } else if (input.customId === 'repeatQueue') {
-                            if (queue.isPlaying)
-                                queue.setRepeatMode(2)
-                        } else if (input.customId === 'repeatTrack') {
-                            if (queue.isPlaying)
-                                queue.setRepeatMode(1)
-                        } else if (input.customId === 'repeatStop') {
-                            if (queue.isPlaying)
-                                queue.setRepeatMode(0)
-                        } else {
-                            queue.setVolume(input.values[0]);
-                        }
-                        if (queue == null) return;
-                        if (!queue.isPlaying) {
-                            await input.update({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: []})
-                        }
-                        else
-                            await input.update({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: createRows(queue)})
-
-                    } catch (e) {
-                        // console.log(e)
-                    }
-                });
-                collector.on('end', collected => {
-                    try {
-                        queueMessage.edit({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: []})
-                        // collected.get([...collected.keys()][0]).message.edit({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: []})
-                    } catch (e) {
-                        // console.log(e)
-                    }
-                });
-
-            } catch (e) {
-                console.log(e)
-                return interaction.followUp("There was a problem with printing the queue.")
-            }
-        }
-        else if (interaction.options.getSubcommand() === "skip") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            const song = await queue.skip();
-            if (!queue.isPlaying)
-                return interaction.followUp({content: `No song to skip.`})
-            else
-                return interaction.followUp({content: `${song.name} is skipped.`})
-        }
-        else if (interaction.options.getSubcommand() === "clear") {
-            if (queue == null || queue.songs.length < 1)
-                return interaction.followUp({content: "Nothing to clear."})
-            queue.clearQueue();
-            return interaction.followUp({content: `The queue is cleared.`})
-        }
-        else if (interaction.options.getSubcommand() === "loop") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            if (!queue.isPlaying)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            switch (mode) {
-                case "track":
-                    queue.setRepeatMode(1)
-                    return interaction.followUp({content: `${queue.nowPlaying.name} is looped.`})
-                case "queue":
-                    queue.setRepeatMode(2)
-                    return interaction.followUp({content: "Queue is looped."})
-                case "off":
-                    queue.setRepeatMode(0)
-                    return interaction.followUp({content: "Loop is turned off."})
-            }
-        }
-        else if (interaction.options.getSubcommand() === "lyrics") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            if (!queue.isPlaying)
-                return interaction.followUp({content: "Nothing is playing right now."})
-
-            const name = queue.nowPlaying.name;
-            const url = new URL(`https://some-random-api.ml/lyrics`);
-            url.searchParams.append("title", name);
-
-            try {
-                const { data } = await axios.get(url.href);
-
-                const lyrics = data.lyrics;
-
-                const [first, ...rest] = Util.splitMessage(lyrics);
-
-                const msg = new MessageEmbed({
-                    title: `${data.title} - ${data.author}`,
-                    thumbnail: { url: data.thumbnail.genius },
-                    description: first,
-                });
-
-                interaction
-                    .followUp({
-                        embeds: [msg],
+            switch (options.getSubcommand()) {
+                case "play":
+                    await client.distube.playVoiceChannel(VoiceChannel, options.getString("query"), {
+                        textChannel: channel,
+                        member: member
                     })
-                    .then((r) => {
-                        // Max characters were reached so send the rest of the lyrics
-                        if (rest.length) {
-                            for (const text of rest) {
-                                // send the rest of the lyrics
-                                const msg = new MessageEmbed({
-                                    description: text,
-                                });
-                                interaction.followUp({
-                                    embeds: [msg],
-                                });
+                    return interaction.editReply({content: "Request received."})
+
+                case "set-volume":
+                    let Volume = options.getInteger("volume");
+                    if (Volume > 100) Volume = 100;
+                    if (Volume < 0) Volume = 0;
+
+                    client.distube.setVolume(VoiceChannel, Volume);
+
+                    return interaction.editReply({content: `Volume has been set to ${Volume}.`});
+
+                case "queue":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    try {
+                        const queueMessage = await interaction.followUp({
+                            embeds: [createQueueEmbed(queue, startQueue, endQueue)],
+                            components: createRows(queue)
+                        })
+
+                        const collector = interaction.channel
+                            .createMessageComponentCollector({time: 840000, idle: 300000})
+                        collector.on('collect', async input => {
+                            try {
+                                if (input.customId === 'first') {
+                                    startQueue = 0;
+                                    endQueue = startQueue + 10;
+                                } else if (input.customId === 'previous') {
+                                    startQueue -= 10;
+
+                                    if (startQueue < 0) {
+                                        startQueue = 0;
+                                        endQueue = startQueue + 10;
+                                    } else
+                                        endQueue -= 10;
+                                } else if (input.customId === 'next') {
+                                    endQueue += 10;
+                                    if (endQueue > queue.songs.length) {
+                                        endQueue = queue.songs.length;
+                                        startQueue = endQueue - 10;
+                                    } else
+                                        startQueue += 10;
+                                } else if (input.customId === 'last') {
+                                    startQueue = queue.songs.length - 10;
+                                    endQueue = queue.songs.length;
+                                } else if (input.customId === 'shuffle') {
+                                    if (queue != null) {
+                                        queue.shuffle();
+                                    }
+                                } else if (input.customId === 'play') {
+                                    if (queue.paused) {
+                                        queue.resume();
+                                    }
+                                } else if (input.customId === 'pause') {
+                                    if (queue.playing) {
+                                        await queue.pause();
+                                    }
+                                } else if (input.customId === 'skip') {
+                                    if (queue != null) {
+                                        if (queue.songs.length < 2)
+                                            queue.skip();
+                                    }
+                                } else if (input.customId === 'repeatQueue') {
+                                    if (queue != null) {
+                                        queue.setRepeatMode(2)
+                                    }
+                                } else if (input.customId === 'repeatTrack') {
+                                    if (queue != null) {
+                                        queue.setRepeatMode(1)
+                                    }
+                                } else if (input.customId === 'repeatStop') {
+                                    if (queue != null) {
+                                        queue.setRepeatMode(0)
+                                    }
+                                } else {
+                                    queue.setVolume(parseInt(input.values[0]));
+                                }
+                                if (queue == null) return;
+
+                                if (queue.playing || queue.paused) {
+                                    await input.update({
+                                        embeds: [createQueueEmbed(queue)],
+                                        components: createRows(queue)
+                                    })
+                                } else {
+                                    await input.update({
+                                        embeds: [createQueueEmbed(queue)],
+                                        components: []
+                                    })
+                                }
+                            } catch (e) {
+                                // console.log(e)
                             }
-                        }
-                    });
-            } catch (e) {
-                await interaction.followUp({ content: "Song lyrics not found." });
-                console.log(e);
+                        });
+                        collector.on('end', collected => {
+                            try {
+                                queueMessage.edit({
+                                    embeds: [createQueueEmbed(queue, startQueue, endQueue)],
+                                    components: []
+                                })
+                                // collected.get([...collected.keys()][0]).message.edit({embeds: [createQueueEmbed(queue, startQueue, endQueue)], components: []})
+                            } catch (e) {
+                                // console.log(e)
+                            }
+                        });
+
+                    } catch (e) {
+                        console.log(e)
+                        return interaction.followUp("There was a problem with printing the queue.")
+                    }
+                    break;
+
+                case "skip":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const skippedSong = queue.songs[0];
+                    await queue.skip(VoiceChannel);
+                    return interaction.editReply({content: `${skippedSong.name} requested by ${skippedSong.user.tag} has been skipped.`});
+
+                case "pause":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+                    await queue.pause(VoiceChannel);
+                    return interaction.editReply({content: `${queue.songs[0].name} has been paused.`});
+
+                case "resume":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+                    await queue.resume(VoiceChannel);
+                    return interaction.editReply({content: `${queue.songs[0].name} has been resumed.`});
+
+                case "stop":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+                    await queue.stop(VoiceChannel);
+                    return interaction.editReply({content: "Music has been stopped and the queue has cleared."});
+
+                case "loop":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const mode = options.getString("mode");
+                    switch (mode) {
+                        case "track":
+                            queue.setRepeatMode(1)
+                            return interaction.editReply({content: `Song is looped.`})
+                        case "queue":
+                            queue.setRepeatMode(2)
+                            return interaction.editReply({content: "Queue is looped."})
+                        case "off":
+                            queue.setRepeatMode(0)
+                            return interaction.editReply({content: "Loop is turned off."})
+                    }
+                    break;
+
+                case "lyrics":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const name = queue.songs[0].name;
+                    const url = new URL(`https://some-random-api.ml/lyrics`);
+                    url.searchParams.append("title", name);
+
+                    try {
+                        const {data} = await axios.get(url.href);
+
+                        const lyrics = data.lyrics;
+
+                        const [first, ...rest] = Util.splitMessage(lyrics);
+
+                        const msg = new MessageEmbed({
+                            title: `${data.title} - ${data.author}`,
+                            thumbnail: {url: data.thumbnail.genius},
+                            description: first,
+                        });
+
+                        interaction
+                            .editReply({
+                                embeds: [msg],
+                            })
+                            .then((r) => {
+                                // Max characters were reached so send the rest of the lyrics
+                                if (rest.length) {
+                                    for (const text of rest) {
+                                        // send the rest of the lyrics
+                                        const msg = new MessageEmbed({
+                                            description: text,
+                                        });
+                                        interaction.followUp({
+                                            embeds: [msg],
+                                        });
+                                    }
+                                }
+                            });
+                    } catch (e) {
+                        await interaction.followUp({content: "Song lyrics not found."});
+                        console.log(e);
+                    }
+                    break;
+
+                case "shuffle":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    queue.shuffle();
+
+                    return interaction.editReply({content: "Queue has been shuffled."})
+
+                case "np":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+                    if (!queue.playing && !queue.paused)
+                        return interaction.editReply({content: "There is nothing playing."});
+
+                    const currentTime = queue.currentTime;
+                    const progress = Math.round((25 * currentTime / queue.songs[0].duration));
+                    const emptyProgress = 25 - progress;
+
+                    const progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+                    const times = `${queue.formattedCurrentTime}/${queue.songs[0].formattedDuration}`;
+
+                    const nowPlayingEmbed = new MessageEmbed()
+                        .setColor("RANDOM")
+                        .setAuthor(queue.songs[0].uploader.name)
+                        .setTitle(`Now Playing: ${queue.songs[0].name}`)
+                        .setURL(queue.songs[0].url)
+                        .setThumbnail(queue.songs[0].thumbnail)
+                        .setTimestamp()
+                    if (queue.paused)
+                        nowPlayingEmbed.setDescription(`⏸ Requested By: ${queue.songs[0].user} (${queue.songs[0].user.tag}) \n${progressString} ${times}`)
+                    else
+                        nowPlayingEmbed.setDescription(`▶ Requested By: ${queue.songs[0].user} (${queue.songs[0].user.tag}) \n${progressString} ${times}`)
+
+                    return interaction.editReply({embeds: [nowPlayingEmbed]})
+
+                case "jump":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const index = interaction.options.getInteger("index");
+                    if (index < 2) {
+                        return interaction.editReply({content: `Invalid index, please try again.`})
+                    }
+
+                    await queue.jump(index - 1);
+
+                    return interaction.editReply({content: "Queue has been jumped."})
+
+                case "filter":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const filter = options.getString("filter-type");
+
+                    switch (filter) {
+                        case "3d":
+                            queue.setFilter("3d")
+                            break;
+                        case "echo":
+                            queue.setFilter("echo")
+                            break;
+                        case "karaoke":
+                            queue.setFilter("karaoke")
+                            break;
+                        case "nightcore":
+                            queue.setFilter("nightcore")
+                            break;
+                        case "vaporwave":
+                            queue.setFilter("vaporwave")
+                            break;
+                        case "flanger":
+                            queue.setFilter("flanger")
+                            break;
+                        case "gate":
+                            queue.setFilter("gate")
+                            break;
+                        case "haas":
+                            queue.setFilter("haas")
+                            break;
+                        case "reverse":
+                            queue.setFilter("reverse")
+                            break;
+                        case "surround":
+                            queue.setFilter("surround")
+                            break;
+                        case "phaser":
+                            queue.setFilter("phaser")
+                            break;
+                        case "tremolo":
+                            queue.setFilter("tremolo")
+                            break;
+                        case "bassboost":
+                            queue.setFilter("bassboost")
+                            break;
+                        case "earwax":
+                            queue.setFilter("earwax")
+                            break;
+                        case "mcompand":
+                            queue.setFilter("mcompand")
+                            break;
+                        case "none":
+                            queue.setFilter(false)
+                            break
+                    }
+
+                    return interaction.editReply({content: `Filter set to ${filter}.`})
+
+                case "toggle-autoplay":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    queue.toggleAutoplay();
+
+                    return interaction.editReply({content: `Autoplay has been toggled.`})
+
+                case "add-related-song":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const addedSong = await queue.addRelatedSong();
+
+                    return interaction.editReply({content: `${addedSong.name} has been added to queue.`})
+
+                case "previous":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const previousSong = await queue.previous();
+
+                    return interaction.editReply({content: `${previousSong.name} is now playing.`})
+
+                case "remove":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const queuePosition = interaction.options.getInteger("queue-position");
+                    if (queuePosition < 1) {
+                        return interaction.editReply({content: `Could not remove that index, please try again.`})
+                    }
+
+                    try {
+                        const song = queue.songs.splice(queuePosition - 1, 1);
+
+                        if (song.name == null)
+                            return interaction.editReply({content: `Could not remove that index, please try again.`})
+                        return interaction.editReply({content: `${song.name} added by ${song.user.tag} has been removed from the queue.`})
+
+                    } catch (e) {
+                        return interaction.editReply({content: `Could not remove that index, please try again.`})
+                    }
+
+                case "seek":
+                    if (!queue)
+                        return interaction.editReply({content: "There is no queue."});
+
+                    const seekTime = options.getInteger("amount")
+                    queue.seek(seekTime);
+
+                    return interaction.editReply({content: `${queue.songs[0].name} has been seeked to ${seekTime}.`})
+
             }
-        }
-        else if (interaction.options.getSubcommand() === "pause") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            if (!queue.isPlaying)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            queue.setPaused(true);
-            return interaction.followUp({content: `${queue.nowPlaying.name} is paused.`})
-        }
-        else if (interaction.options.getSubcommand() === "unpause") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            if (!queue.isPlaying)
-                return interaction.followUp({content: "Nothing is in queue right now."})
-            queue.setPaused(false);
-            return interaction.followUp({content: `${queue.nowPlaying.name} is resumed.`})
-        }
-        else if (interaction.options.getSubcommand() === "shuffle") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            queue.shuffle();
-            return interaction.followUp({content: "Queue is shuffled."})
-        }
-        else if (interaction.options.getSubcommand() === "np") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            if (!queue.isPlaying)
-                return interaction.followUp({content: "Nothing is in queue right now."})
 
-            const ProgressBar = queue.createProgressBar({block: `▬`, arrow: `⚪`});
-            const nowPlayingEmbed = new MessageEmbed()
-                .setColor("RANDOM")
-                .setAuthor(queue.nowPlaying.author)
-                .setTitle(`Now Playing: ${queue.nowPlaying.name}`)
-                .setURL(queue.nowPlaying.url)
-                .setThumbnail(queue.nowPlaying.thumbnail)
-                .setTimestamp()
-            if (queue.paused)
-                nowPlayingEmbed.setDescription(`⏸ Requested By: ${queue.nowPlaying.requestedBy} (${queue.nowPlaying.requestedBy.tag}) \n${ProgressBar.prettier}`)
-            else
-                nowPlayingEmbed.setDescription(`▶ Requested By: ${queue.nowPlaying.requestedBy} (${queue.nowPlaying.requestedBy.tag}) \n${ProgressBar.prettier}`)
+        } catch
+            (e) {
+            console.log(e)
+            const errorEmbed = new MessageEmbed()
+                .setColor("RED")
+                .setDescription(`🛑 Alert: ${e}`)
 
-            return interaction.followUp({embeds: [nowPlayingEmbed]})
-        }
-        else if (interaction.options.getSubcommand() === "set-volume") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            queue.setVolume(volume);
-            return interaction.followUp({content: "Volume has been changed."})
-        }
-        else if (interaction.options.getSubcommand() === "stop") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            queue.stop();
-            return interaction.followUp({content: "Player has stopped."})
-        }
-        else if (interaction.options.getSubcommand() === "remove") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing in queue."})
-            if (queue.songs.length < 1)
-                return interaction.followUp({content: "Nothing in queue."})
-            const song = queue.remove(queuePosition-1);
-            if (song != null)
-                return interaction.followUp({content: `Removed song: ${song.name} at position: ${queuePosition}`})
-            return interaction.followUp({content: `Could not remove song.`})
-        }
-        else if (interaction.options.getSubcommand() === "disconnect") {
-            if (queue == null)
-                return interaction.followUp({content: "Nothing is playing right now."})
-            queue.connection.leave();
-            return interaction.followUp({content: "Player has left."})
-        }
-        // else if (interaction.options.getSubcommand() === "seek") {
-        //     if (queue == null) {
-        //         return interaction.followUp({content: "Nothing is playing right now."})
-        //     }
-        //     if (queue.nowPlaying == null)
-        //         return interaction.followUp({content: "Nothing is in queue right now."})
-        //
-        //     await queue.seek(seek)
-        //     return interaction.followUp({content: `Seeked by ${seek}.`})
-        // }
-        else  {
-            return interaction.followUp({content: "There was a problem with this command."})
+            await interaction.channel.send({embeds: [errorEmbed]})
+
         }
     }
 };
 
-function createQueueEmbed (queue, startQueue, endQueue) {
+function createQueueEmbed(queue) {
+
     let nowPlaying;
     let repeating = "";
     let volume = "";
 
-    if (!queue.isPlaying)
+    if (!queue.playing && !queue.paused)
         nowPlaying = "Nothing is being played."
     else {
-        const ProgressBar = queue.createProgressBar({block: `▬`, arrow: `⚪`});
+        const currentTime = queue.currentTime;
+        const progress = Math.round((25 * currentTime / queue.songs[0].duration));
+        const emptyProgress = 25 - progress;
+
+        const progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+        const times = `${queue.formattedCurrentTime}/${queue.songs[0].formattedDuration}`;
+
         if (queue.paused)
-            nowPlaying = `⏸ [${queue.nowPlaying.name}](${queue.nowPlaying.url}) - Requested by: ${queue.nowPlaying.requestedBy} (${queue.nowPlaying.requestedBy.tag})\n${ProgressBar.prettier}`
+            nowPlaying = `⏸ [${queue.songs[0].name}](${queue.songs[0].url}) - Requested by: ${queue.songs[0].user} (${queue.songs[0].user.tag})\n${progressString} ${times}`
         else
-            nowPlaying = `▶ [${queue.nowPlaying.name}](${queue.nowPlaying.url}) - Requested by: ${queue.nowPlaying.requestedBy} (${queue.nowPlaying.requestedBy.tag})\n${ProgressBar.prettier}`
+            nowPlaying = `▶ [${queue.songs[0].name}](${queue.songs[0].url}) - Requested by: ${queue.songs[0].user} (${queue.songs[0].user.tag})\n${progressString} ${times}`
     }
 
     switch (queue.repeatMode) {
@@ -498,10 +685,10 @@ function createQueueEmbed (queue, startQueue, endQueue) {
             repeating = `❌`
             break;
         case 1:
-            repeating =`🔂`
+            repeating = `🔂`
             break;
         case 2:
-            repeating =`🔁`
+            repeating = `🔁`
             break;
     }
 
@@ -520,7 +707,7 @@ function createQueueEmbed (queue, startQueue, endQueue) {
         .addFields(
             {name: 'Now Playing', value: `${nowPlaying}`},
             {name: 'Total Entries', value: `${queue.songs.length}`, inline: true},
-            {name: 'Total Queue Duration', value: `${getDuration(queue, 0, queue.length)}`, inline: true},
+            {name: 'Total Queue Duration', value: `${queue.formattedDuration}`, inline: true},
             {name: 'Repeating', value: `${repeating}`, inline: true},
             {name: `${volume}`, value: `${queue.volume}`, inline: true},
         )
@@ -528,48 +715,19 @@ function createQueueEmbed (queue, startQueue, endQueue) {
         .setDescription(`${getDescription(queue, startQueue, endQueue)}`);
 }
 
-function getDuration (queue, startQueue, endQueue) {
-    const slicedArray = queue.songs.slice(startQueue, endQueue);
-    let duration = 0;
-    slicedArray.forEach(song => {
-        const time = song.duration; //hh:mm:ss
-        let splitTime = time.split(`:`);
-        let ms = 0;
-        if (splitTime.length === 3) {
-            ms = Number(splitTime[0]) * 60 * 60 * 1000 + Number(splitTime[1]) * 60 * 1000 + Number(splitTime[2]) * 1000;
-        }
-        else  if (splitTime.length === 2) {
-            ms = Number(splitTime[0]) * 60 * 1000 + Number(splitTime[1]) * 1000;
-        }
-        duration += ms
-    });
-    return msToTime(duration);
-}
-
-function msToTime(ms) {
-    let seconds = (ms / 1000).toFixed(1);
-    let minutes = (ms / (1000 * 60)).toFixed(1);
-    let hours = (ms / (1000 * 60 * 60)).toFixed(1);
-    let days = (ms / (1000 * 60 * 60 * 24)).toFixed(1);
-    if (seconds < 60) return seconds + " Sec";
-    else if (minutes < 60) return minutes + " Min";
-    else if (hours < 24) return hours + " Hrs";
-    else return days + " Days";
-}
-
-function getDescription (queue, startQueue, endQueue) {
+function getDescription(queue) {
     let description = ``;
     for (let i = startQueue; i < endQueue; i++) {
         try {
-            description += `${i + 1}) \`\`${queue.songs[i].duration}\`\` [${queue.songs[i].name}](${queue.songs[i].url}) - ${queue.songs[i].requestedBy} (${queue.songs[i].requestedBy.tag}) Time Until: \`\`${getDuration(queue, 0, i)}\`\`\n`
-        }catch (e) {
+            description += `${i + 1}) \`\`${queue.songs[i].formattedDuration}\`\` [${queue.songs[i].name}](${queue.songs[i].url}) - ${queue.songs[i].user} (${queue.songs[i].user.tag})\n`
+        } catch (e) {
             // console.log(e)
         }
     }
     return description;
 }
 
-function createRows (queue) {
+function createRows(queue) {
     let actionRows = [];
 
     const buttonRow1 = new MessageActionRow()
@@ -638,7 +796,7 @@ function createRows (queue) {
                     .setEmoji("🔁")
                     .setCustomId("repeatQueue")
             )
-    } else if (queue.repeatMode === 2){
+    } else if (queue.repeatMode === 2) {
         buttonRow2
             .addComponents(
                 new MessageButton()

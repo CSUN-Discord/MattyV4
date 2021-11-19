@@ -1,6 +1,6 @@
-const { events } = require("../validation/eventNames");
-const { promisify } = require("util");
-const { glob } = require("glob");
+const {events} = require("../validation/eventNames");
+const {promisify} = require("util");
+const {glob} = require("glob");
 const PG = promisify(glob);
 const Ascii = require("ascii-table");
 
@@ -17,8 +17,8 @@ module.exports = async (client) => {
     if (!events.includes(event.name) || !event.name) {
       const l = file.split("/");
       await table.addRow(
-        `${events.name || "Missing"}`,
-        `⚠ Event Name is either invalid or missing ${l[6] + `/` + l[7]}`
+          `${events.name || "Missing"}`,
+          `⚠ Event Name is either invalid or missing ${l[6] + `/` + l[7]}`
       );
       return;
     }
@@ -29,6 +29,8 @@ module.exports = async (client) => {
 
     await table.addRow(event.name, "✔ Successful");
   });
+
+  require("../events/Distube/DistubeEvents.js");
 
   console.log(table.toString());
 };

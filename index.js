@@ -7,21 +7,18 @@ const dbObjects = require("./db/dbObjects");
 
 // Create a new discord client
 const client = new Client({intents: 32767, partials: ['MESSAGE', 'REACTION', 'USER']});
-exports.client = client;
 
 require("./db/functions/giveawayFunctions")(client)
 
-const {Player} = require("./modified-packages/discord-music-player");
+const {DisTube} = require("distube");
+const {SpotifyPlugin} = require("@distube/spotify");
 
-const player = new Player(client, {
-    leaveOnEnd: false,
+client.distube = new DisTube(client, {
+    emitNewSongOnly: true,
     leaveOnStop: false,
-    leaveOnEmpty: true,
-    deafenOnJoin: true
-});
-
-// You can define the Player as *client.player* to easily access it.
-client.player = player;
+    emitAddSongWhenCreatingQueue: false,
+    plugins: [new SpotifyPlugin()]
+})
 
 //create a collection to store all the commands
 client.commands = new Collection();
@@ -86,6 +83,8 @@ process.on("uncaughtException", (err) => {
         process.exit();
     }
 });
+
+exports.client = client;
 
 //start the bot with the token from the config file
 client.login(token);
