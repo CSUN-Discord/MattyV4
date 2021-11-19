@@ -22,6 +22,7 @@ module.exports = {
         })
 
         const channelIds = await channelsFunctions.getChannelId(messageTemp.guild.id);
+        if (channelIds.length < 1) return;
         const auditChannelId = channelIds[0].channels.audit || null;
 
         if (auditChannelId === null)

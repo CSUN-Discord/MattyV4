@@ -19,6 +19,7 @@ module.exports = {
         await thread.setLocked(true);
 
         const channelIds = await channelsFunctions.getChannelId(thread.guild.id);
+        if (channelIds.length < 1) return;
         const auditChannelId = channelIds[0].channels.audit || null;
 
         if (auditChannelId == null)

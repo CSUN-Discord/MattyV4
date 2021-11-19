@@ -18,6 +18,7 @@ module.exports = {
         );
 
         const channelIds = await channelsFunctions.getChannelId(member.guild.id);
+        if (channelIds.length < 1) return;
         const welcomeChannelId = channelIds[0].channels.welcome || null;
 
         if (welcomeChannelId == null)

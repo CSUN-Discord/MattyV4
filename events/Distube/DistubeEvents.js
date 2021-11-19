@@ -1,18 +1,28 @@
 const {client} = require("../../index")
 const {MessageEmbed} = require("discord.js")
 
+let playingMessage;
+
 const status = queue => `Volume: \`${queue.volume}%\` | Filter: \`${queue.filters.join(", ") || "Off"}\` | Loop: \`${queue.repeatMode ? queue.repeatMode === 2 ? "All Queue" : "This Song" : "Off"}\` | Autoplay: \`${queue.autoplay ? "On" : "Off"}\``
 client.distube
     .on("playSong", (queue, song) => {
-        queue.textChannel.send(
-            {
-                embeds: [
-                    new MessageEmbed()
-                        .setColor("RANDOM")
-                        .setDescription(`Playing \`${song.name}\` - \`${song.formattedDuration}\`\nRequested by: ${song.user}\n${status(queue)}`)
-                ]
-            }
-        )
+        try {
+            playingMessage.delete();
+
+            queue.textChannel.send(
+                {
+                    embeds: [
+                        new MessageEmbed()
+                            .setColor("RANDOM")
+                            .setDescription(`Playing \`${song.name}\` - \`${song.formattedDuration}\`\nRequested by: ${song.user}\n${status(queue)}`)
+                    ]
+                }
+            ).then((message) => {
+                playingMessage = message;
+            }).catch()
+        } catch (e) {
+        }
+
     })
 
     .on("addSong", (queue, song) => {
@@ -27,11 +37,15 @@ client.distube
                 {name: 'Song Duration', value: `${song.formattedDuration}`, inline: true},
                 {name: 'Total Queue Duration', value: `${queue.formattedDuration}`, inline: true}
             )
-        queue.textChannel.send(
-            {
-                embeds: [addedEmbed]
-            }
-        )
+        try {
+            queue.textChannel.send(
+                {
+                    embeds: [addedEmbed]
+                }
+            )
+        } catch (e) {
+
+        }
     })
     .on("addList", (queue, playlist) => {
         const addedEmbed = new MessageEmbed()
@@ -47,11 +61,16 @@ client.distube
                 },
                 {name: 'Total Queue Duration', value: `${queue.formattedDuration}`, inline: true}
             )
-        queue.textChannel.send(
-            {
-                embeds: [addedEmbed]
-            }
-        )
+
+        try {
+            queue.textChannel.send(
+                {
+                    embeds: [addedEmbed]
+                }
+            )
+        } catch (e) {
+
+        }
     })
 
     .on("error", (channel, e) => {
@@ -63,15 +82,6 @@ client.distube
             }
         )
         console.error(e)
-    })
-
-    .on("empty", queue => {
-        queue.textChannel.send(
-            {
-                embeds: [new MessageEmbed().setColor("RANDOM")
-                    .setDescription(`Voice channel is empty, leaving the channel.`)]
-            }
-        )
     })
 
     .on("searchNoResult", message => {

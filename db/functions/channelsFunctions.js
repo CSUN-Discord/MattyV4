@@ -243,6 +243,28 @@ module.exports = {
         }
     },
 
+    addLofiStation: async function (guildId, youtubeURL) {
+        try {
+            await channelsSchema
+                .findOneAndUpdate(
+                    {
+                        guildId: guildId,
+                    },
+                    {
+                        $set: {
+                            lofiTheme: youtubeURL,
+                        },
+                    },
+                    {
+                        upsert: true,
+                    }
+                )
+                .exec();
+        } catch (e) {
+            console.log(e);
+        }
+    },
+
     getChannelId: async function (guildId) {
         try {
             return await channelsSchema

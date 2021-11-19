@@ -17,7 +17,8 @@ const channelsSchema = new Schema({
         verifiedPlannedMeetups: String,
         audit: String,
         autoLofi: String
-    }
+    },
+    lofiTheme: String,
 });
 
 module.exports = mongoose.model("channels", channelsSchema);

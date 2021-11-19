@@ -92,6 +92,7 @@ module.exports = {
             );
 
         const channelIds = await channelsFunctions.getChannelId(interaction.guild.id);
+        if (channelIds.length < 1) return await interaction.followUp("The role change channel ID needs to be set.");
         const roleChangeChannelId = channelIds[0].channels.roleChange || null;
 
         if (roleChangeChannelId != null) {

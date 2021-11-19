@@ -47,6 +47,7 @@ module.exports = {
         );
 
         const channelIds = await channelsFunctions.getChannelId(reaction.message.guild.id);
+        if (channelIds.length < 1) return;
         const roleChangeChannelId = channelIds[0].channels.roleChange || null;
 
         if (roleChangeChannelId == null)

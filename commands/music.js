@@ -4,7 +4,8 @@ This command will play a song
 
 const axios = require("axios");
 const {MessageEmbed, Util, MessageButton, MessageActionRow, MessageSelectMenu} = require("discord.js");
-const {client} = require("../index")
+const {client} = require("../index");
+const channelsFunctions = require("../db/functions/channelsFunctions.js");
 let startQueue = 0;
 let endQueue = 10;
 
@@ -230,7 +231,12 @@ module.exports = {
         },
         {
             name: "stop",
-            description: "Stop, but don't disconnect the bot.",
+            description: "Disconnects the bot if in lofi state, else just stops and clears queue.",
+            type: "SUB_COMMAND",
+        },
+        {
+            name: "disconnect",
+            description: "Disconnects the bot if it is in a voice channel.",
             type: "SUB_COMMAND",
         },
         {
@@ -246,6 +252,93 @@ module.exports = {
                 },
             ]
         },
+        {
+            name: "lofi-theme",
+            description: "Set lofi theme to play automatically if the channel ID is set.",
+            type: "SUB_COMMAND",
+            options: [
+                {
+                    name: "theme",
+                    description: "The lofi radio theme.",
+                    required: true,
+                    type: "STRING",
+                    choices: [
+                        {
+                            name: "lofi hip hop radio - beats to relax/study to",
+                            value: "https://www.youtube.com/watch?v=5qap5aO4i9A"
+                        },
+                        {
+                            name: "coffee shop radio // 24/7 lofi hip-hop beats",
+                            value: "https://www.youtube.com/watch?v=-5KAN9_CzSA"
+                        },
+                        {
+                            name: "Chillhop Radio - jazzy & lofi hip hop beats",
+                            value: "https://www.youtube.com/watch?v=5yx6BWlEVcY"
+                        },
+                        {
+                            name: "lofi hip hop radio - beats to sleep/chill to",
+                            value: "https://www.youtube.com/watch?v=DWcJFNfaw9c"
+                        },
+                        {
+                            name: "anime lofi hip hop radio - 24/7 chill lofi remixes of anime",
+                            value: "https://www.youtube.com/watch?v=w3LWHIz3bMc"
+                        },
+                        {
+                            name: "Shigatsu wa Kimi no Uso (Your Lie in April) OST",
+                            value: "https://www.youtube.com/watch?v=nVmaUlPHEuc"
+                        },
+                        {
+                            name: "MapleStory BGM Compilation",
+                            value: "https://www.youtube.com/watch?v=_nMJoMVFKZ0"
+                        },
+                        {
+                            name: "Anime OST Piano Collection",
+                            value: "https://www.youtube.com/watch?v=nRhfFpj35Rc"
+                        },
+                        {
+                            name: "Disney OST Piano Collection",
+                            value: "https://www.youtube.com/watch?v=LoC2WGo_zLw"
+                        },
+                        {
+                            name: "Ghibli Orchestra Collection",
+                            value: "https://www.youtube.com/watch?v=Rbn8fR6TgtM"
+                        },
+                        {
+                            name: "Anime Crossing OST Collection",
+                            value: "https://www.youtube.com/watch?v=Cxkmd8YLo3w"
+                        },
+                        {
+                            name: "Relaxing Piano Studio Ghibli Collection",
+                            value: "https://www.youtube.com/watch?v=wnudr9qjrbA"
+                        },
+                        {
+                            name: "Work&Study Relaxing Jazz Piano Radio",
+                            value: "https://www.youtube.com/watch?v=ANlnm6GSKBA"
+                        },
+                        {
+                            name: "Home Jazz Playlist",
+                            value: "https://www.youtube.com/watch?v=rUP6CT5cYfs"
+                        },
+                        {
+                            name: "Howl's Moving Castle Sleep Song",
+                            value: "https://www.youtube.com/watch?v=JV2edV05Iao"
+                        },
+                        {
+                            name: "Relaxing Fireplace Sounds",
+                            value: "https://www.youtube.com/watch?v=UgHKb_7884o"
+                        },
+                        {
+                            name: "Utaite & Vocaloid Piano Collection",
+                            value: "https://www.youtube.com/watch?v=Q2SIStiDlFU"
+                        },
+                        {
+                            name: "Dark Piano Radio",
+                            value: "https://www.youtube.com/watch?v=RnqGE5QA22M"
+                        },
+                    ]
+                }
+            ]
+        },
     ],
     permission: ["SEND_MESSAGES"],
 
@@ -256,9 +349,16 @@ module.exports = {
      */
     async execute(interaction) {
 
-
         const {options, member, guild, channel} = interaction
         const VoiceChannel = member.voice.channel;
+        const channelIds = await channelsFunctions.getChannelId(guild.id);
+        let autoLofiChannelId;
+        if (channelIds.length < 1) {
+            autoLofiChannelId = null;
+        } else {
+            autoLofiChannelId = channelIds[0].channels.autoLofi || null;
+        }
+
 
         if (!VoiceChannel)
             return interaction.reply({
@@ -277,10 +377,16 @@ module.exports = {
 
             switch (options.getSubcommand()) {
                 case "play":
-                    await client.distube.playVoiceChannel(VoiceChannel, options.getString("query"), {
-                        textChannel: channel,
-                        member: member
-                    })
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
+                    await client.distube.playVoiceChannel(VoiceChannel, options.getString("query"),
+                        {
+                            textChannel: channel,
+                            member: member
+                        }
+                    )
                     return interaction.editReply({content: "Request received."})
 
                 case "set-volume":
@@ -293,6 +399,10 @@ module.exports = {
                     return interaction.editReply({content: `Volume has been set to ${Volume}.`});
 
                 case "queue":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -305,6 +415,7 @@ module.exports = {
                         const collector = interaction.channel
                             .createMessageComponentCollector({time: 840000, idle: 300000})
                         collector.on('collect', async input => {
+
                             try {
                                 if (input.customId === 'first') {
                                     startQueue = 0;
@@ -339,10 +450,15 @@ module.exports = {
                                     if (queue.playing) {
                                         await queue.pause();
                                     }
+                                } else if (input.customId === 'previousSong') {
+                                    if (queue != null) {
+                                        if (queue.previousSongs.length > 0)
+                                            queue.previous();
+                                    }
                                 } else if (input.customId === 'skip') {
                                     if (queue != null) {
-                                        if (queue.songs.length < 2)
-                                            queue.skip();
+                                        if (queue.songs.length > 1)
+                                            await queue.skip();
                                     }
                                 } else if (input.customId === 'repeatQueue') {
                                     if (queue != null) {
@@ -395,14 +511,21 @@ module.exports = {
                     break;
 
                 case "skip":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
                     const skippedSong = queue.songs[0];
+                    if (queue.songs.length < 2)
+                        return interaction.editReply({content: `There's only one song in the queue so it can't be skipped.`});
                     await queue.skip(VoiceChannel);
                     return interaction.editReply({content: `${skippedSong.name} requested by ${skippedSong.user.tag} has been skipped.`});
 
                 case "pause":
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
                     await queue.pause(VoiceChannel);
@@ -415,12 +538,22 @@ module.exports = {
                     return interaction.editReply({content: `${queue.songs[0].name} has been resumed.`});
 
                 case "stop":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        await queue.stop(VoiceChannel);
+                        client.distube.voices.collection.get(guild.id).leave();
+                        return interaction.editReply({content: "Bot has disconnected because it was in the lofi channel."});
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
                     await queue.stop(VoiceChannel);
                     return interaction.editReply({content: "Music has been stopped and the queue has cleared."});
 
                 case "loop":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -439,6 +572,10 @@ module.exports = {
                     break;
 
                 case "lyrics":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -484,6 +621,10 @@ module.exports = {
                     break;
 
                 case "shuffle":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -500,8 +641,11 @@ module.exports = {
                     const currentTime = queue.currentTime;
                     const progress = Math.round((25 * currentTime / queue.songs[0].duration));
                     const emptyProgress = 25 - progress;
-
-                    const progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+                    let progressString = "";
+                    try {
+                        progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+                    } catch (e) {
+                    }
                     const times = `${queue.formattedCurrentTime}/${queue.songs[0].formattedDuration}`;
 
                     const nowPlayingEmbed = new MessageEmbed()
@@ -519,6 +663,10 @@ module.exports = {
                     return interaction.editReply({embeds: [nowPlayingEmbed]})
 
                 case "jump":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -592,6 +740,10 @@ module.exports = {
                     return interaction.editReply({content: `Filter set to ${filter}.`})
 
                 case "toggle-autoplay":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -600,6 +752,10 @@ module.exports = {
                     return interaction.editReply({content: `Autoplay has been toggled.`})
 
                 case "add-related-song":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -608,6 +764,10 @@ module.exports = {
                     return interaction.editReply({content: `${addedSong.name} has been added to queue.`})
 
                 case "previous":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -616,6 +776,10 @@ module.exports = {
                     return interaction.editReply({content: `${previousSong.name} is now playing.`})
 
                 case "remove":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -636,6 +800,10 @@ module.exports = {
                     }
 
                 case "seek":
+                    if (autoLofiChannelId === guild.me.voice.channelId) {
+                        return interaction.editReply({content: "Can't use this command while in lofi channel."})
+                    }
+
                     if (!queue)
                         return interaction.editReply({content: "There is no queue."});
 
@@ -643,6 +811,36 @@ module.exports = {
                     queue.seek(seekTime);
 
                     return interaction.editReply({content: `${queue.songs[0].name} has been seeked to ${seekTime}.`})
+
+                case "lofi-theme":
+
+                    const theme = options.getString("theme");
+                    await channelsFunctions.addLofiStation(guild.id, theme);
+
+                    if (guild.me.voice.channelId && autoLofiChannelId === guild.me.voice.channelId) {
+                        await queue.stop(VoiceChannel);
+                        client.distube.voices.collection.get(guild.id).leave();
+                        await client.distube.playVoiceChannel(VoiceChannel, theme);
+                        const queueTemp = await client.distube.getQueue(VoiceChannel);
+                        queueTemp.setRepeatMode(2);
+                    }
+
+
+                    return interaction.editReply({content: `Theme set to ${theme}`, ephemeral: true})
+
+                case "disconnect":
+                    if (!guild.me.voice.channelId) {
+                        return interaction.editReply({content: `Bot is not in a voice channel.`, ephemeral: true})
+                    }
+                    try {
+                        await queue.stop(VoiceChannel);
+                        client.distube.voices.collection.get(guild.id).leave();
+                        return interaction.editReply({content: `Bot disconnected from voice channel.`, ephemeral: true})
+                    } catch (e) {
+                        console.log(e);
+                        return interaction.editReply({content: `Bot couldn't be disconnected.`, ephemeral: true})
+
+                    }
 
             }
 
@@ -672,7 +870,12 @@ function createQueueEmbed(queue) {
         const progress = Math.round((25 * currentTime / queue.songs[0].duration));
         const emptyProgress = 25 - progress;
 
-        const progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+        let progressString = "";
+        try {
+            progressString = "▬".repeat(progress) + "⚪" + '▬'.repeat(emptyProgress);
+        } catch (e) {
+        }
+
         const times = `${queue.formattedCurrentTime}/${queue.songs[0].formattedDuration}`;
 
         if (queue.paused)
@@ -784,6 +987,13 @@ function createRows(queue) {
                     .setCustomId("pause")
             )
     }
+    buttonRow2
+        .addComponents(
+            new MessageButton()
+                .setStyle("SECONDARY")
+                .setEmoji("⏮")
+                .setCustomId("previousSong")
+        )
     buttonRow2
         .addComponents(
             new MessageButton()

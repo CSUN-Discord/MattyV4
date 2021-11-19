@@ -65,6 +65,7 @@ module.exports = {
         const member = interaction.options.getMember("user");
 
         const channelIds = await channelsFunctions.getChannelId(interaction.guild.id);
+        if (channelIds.length < 1) return;
         const modOnlyChannelId = channelIds[0].channels.modOnly || null;
 
         if (modOnlyChannelId == null)

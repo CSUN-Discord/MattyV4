@@ -59,6 +59,7 @@ module.exports = {
      */
     async execute(interaction) {
         const channelIds = await channelsFunctions.getChannelId(interaction.guild.id);
+        if (channelIds.length < 1) return;
         const roommateChannelId = channelIds[0].channels.roommate || null;
 
         if (roommateChannelId == null)

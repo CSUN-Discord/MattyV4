@@ -14,6 +14,7 @@ module.exports = {
      */
     async execute(message) {
         const channelIds = await channelsFunctions.getChannelId(message.guild.id);
+        if (channelIds.length < 1) return;
         const marketplaceChannelId = channelIds[0].channels.marketplace || null;
         const roommateChannelId = channelIds[0].channels.roommate || null;
         const welcomeChannelId = channelIds[0].channels.welcome || null;

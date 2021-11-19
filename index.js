@@ -16,8 +16,9 @@ const {SpotifyPlugin} = require("@distube/spotify");
 client.distube = new DisTube(client, {
     emitNewSongOnly: true,
     leaveOnStop: false,
-    emitAddSongWhenCreatingQueue: false,
-    plugins: [new SpotifyPlugin()]
+    emitAddSongWhenCreatingQueue: true,
+    plugins: [new SpotifyPlugin()],
+    emptyCooldown: 1
 })
 
 //create a collection to store all the commands

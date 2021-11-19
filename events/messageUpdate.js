@@ -21,6 +21,7 @@ module.exports = {
             await oldMessage.fetch();
 
         const channelIds = await channelsFunctions.getChannelId(newMessage.guild.id);
+        if (channelIds.length < 1) return;
         const auditChannelId = channelIds[0].channels.audit || null;
 
         if (auditChannelId == null)

@@ -42,6 +42,10 @@ module.exports = {
         });
 
         const channelIds = await channelsFunctions.getChannelId(interaction.guild.id);
+        if (channelIds.length < 1) return interaction.followUp({
+            content: "A suggestion channel needs to be set up.",
+            ephemeral: true,
+        });
         const suggestionsChannelId = channelIds[0].channels.suggestions || null;
 
         if (suggestionsChannelId == null)
