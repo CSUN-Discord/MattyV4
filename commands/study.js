@@ -44,33 +44,37 @@ module.exports = {
             return interaction.reply({content: "Couldn't find roles.", ephemeral: true});
         }
 
-        if (
-            member.roles.cache.some((role) => role.id === verified.id)
-        ) {
-            await studyFunctions.addVerifiedUser(user.id);
-            member.roles.remove(verified);
-        }
-        if (
-            member.roles.cache.some((role) => role.id === student.id)
-        ) {
-            member.roles.remove(student);
-        }
-        if (
-            member.roles.cache.some((role) => role.id === study.id)
-        ) {
-            member.roles.remove(study);
-            member.roles.add(student);
-
-            const document = await studyFunctions.removeVerifiedUser(user.id);
-
-            if (document) {
-                member.roles.add(verified);
+        try {
+            if (
+                member.roles.cache.some((role) => role.id === verified.id)
+            ) {
+                await studyFunctions.addVerifiedUser(user.id);
+                member.roles.remove(verified);
             }
+            if (
+                member.roles.cache.some((role) => role.id === student.id)
+            ) {
+                member.roles.remove(student);
+            }
+            if (
+                member.roles.cache.some((role) => role.id === study.id)
+            ) {
+                member.roles.remove(study);
+                member.roles.add(student);
 
-        } else {
-            member.roles.add(study);
+                const document = await studyFunctions.removeVerifiedUser(user.id);
+
+                if (document) {
+                    member.roles.add(verified);
+                }
+
+            } else {
+                member.roles.add(study);
+            }
+            return interaction.reply({content: "User updated.", ephemeral: true});
+        } catch (e) {
+            console.log(e)
         }
-        return interaction.reply({content: "User updated.", ephemeral: true});
     },
 
 };
