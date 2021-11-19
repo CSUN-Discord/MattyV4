@@ -28,17 +28,21 @@ module.exports = {
         let member = interaction.guild.members.cache.get(user.id);
 
         const study = interaction.guild.roles.cache.find(
-            (r) => r.name.toLowerCase() === "study"
+            (r) => r.name === "Study"
         ) || null;
         const student = interaction.guild.roles.cache.find(
-            (r) => r.name.toLowerCase() === "student"
+            (r) => r.name === "Student"
         ) || null;
         const verified = interaction.guild.roles.cache.find(
-            (r) => r.name.toLowerCase() === "verified"
+            (r) => r.name === "✓ Verified"
         ) || null;
 
-        if (study == null || student == null || verified == null)
+        if (study == null || student == null || verified == null) {
+            console.log(study)
+            console.log(student)
+            console.log(verified)
             return interaction.reply({content: "Couldn't find roles.", ephemeral: true});
+        }
 
         if (
             member.roles.cache.some((role) => role.id === verified.id)
