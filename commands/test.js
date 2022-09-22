@@ -2,7 +2,7 @@
 test command
 */
 
-const { MessageEmbed} = require("discord.js");
+const {MessageEmbed} = require("discord.js");
 // const {Collection} = require('discord.js')
 
 const pollFunctions = require("../db/functions/pollFunctions");
@@ -18,17 +18,18 @@ module.exports = {
      * @returns {Promise<void>}
      */
     async execute(interaction) {
+        interaction.reply("hi")
 
-        interaction.deferReply()
-
-        let queue = interaction.client.player.createQueue(interaction.guild.id);
-
-        await queue.join(interaction.member.voice.channel);
-
-        song = await queue.play("rap god", {requestedBy: interaction.user}).catch(songResponse => {
-            console.log(songResponse)
-
-        });
+        // interaction.deferReply()
+        //
+        // let queue = interaction.client.player.createQueue(interaction.guild.id);
+        //
+        // await queue.join(interaction.member.voice.channel);
+        //
+        // song = await queue.play("rap god", {requestedBy: interaction.user}).catch(songResponse => {
+        //     console.log(songResponse)
+        //
+        // });
     },
 
 };
