@@ -73,7 +73,7 @@ module.exports = {
         let major = interaction.options.getString("major");
         major = major.charAt(0).toUpperCase() + major.slice(1);
 
-        if (major.toLowerCase() === "comp sci" || major.toLowerCase() === "compsci") {
+        if (major.toLowerCase() === "comp sci" || major.toLowerCase() === "compsci" || major.toLowerCase() === "cs" || major.toLowerCase() === "computerscience" || major.toLowerCase() === "computer science") {
             major = "CS"
         }
 
