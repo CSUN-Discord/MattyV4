@@ -31,7 +31,7 @@ module.exports = {
         }
 
         welcomeChannel.send(
-            `Welcome ${member.user}! \n To access all channels please use the command **/answer-the-bot** and wait while 
+            `Welcome ${member.user}! \n To access all channels please do the following: First, answer the bot that that has privately messaged you, Second, in the channel below use the command **/answer-the-bot** and wait while 
         someone from the mod team lets you in the server.`
         );
     },
